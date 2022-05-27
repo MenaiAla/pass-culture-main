@@ -953,6 +953,102 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         "Identifiant de la BU",
         "SIRET de la BU",
         "Libellé de la BU",  # actually, the commercial name of the related venue
+        "Identifiant du lieu",
+        "Libellé du lieu",
+        "Identifiant de l'offre",
+        "Nom de l'offre",
+        "Sous-catégorie de l'offre",
+        "Prix de la réservation",
+        "Type de réservation",
+        "Date de validation",
+        "Identifiant de la valorisation",
+        "Taux de remboursement",
+        "Montant remboursé à l'offreur",
+        "Ministère",
+    ]
+    # We join `Venue` twice: once to get the venue that is related to
+    # the business unit ; and once to get the venue of the offer. To
+    # distinguish them in `with_entities()`, we need aliases.
+    BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
+    OfferVenue = sqla_orm.aliased(offerers_models.Venue)
+    query = (
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.booking)
+        .filter(bookings_models.Booking.amount != 0)
+        .join(models.Pricing.businessUnit)
+        # There should be a Venue with the same SIRET as the business
+        # unit... but edition has been sloppy and there are
+        # inconsistencies. To avoid excluding business unit, we do an
+        # _outer_ join and not an _inner_ join here. Obviously, the
+        # corresponding columns will be empty in the CSV file.
+        # See also `_generate_business_units_file()` and `generate_invoice_file()`.
+        .outerjoin(
+            BusinessUnitVenue,
+            models.BusinessUnit.siret == BusinessUnitVenue.siret,
+        )
+        .join(bookings_models.Booking.stock)
+        .join(offers_models.Stock.offer)
+        .join(offers_models.Offer.venue.of_type(OfferVenue))
+        .join(bookings_models.Booking.offerer)
+        .outerjoin(bookings_models.Booking.individualBooking)
+        .outerjoin(bookings_models.IndividualBooking.deposit)
+        .outerjoin(bookings_models.Booking.educationalBooking)
+        .outerjoin(educational_models.EducationalBooking.educationalInstitution)
+        .outerjoin(
+            educational_models.EducationalDeposit,
+            and_(
+                educational_models.EducationalDeposit.educationalYearId
+                == educational_models.EducationalBooking.educationalYearId,
+                educational_models.EducationalDeposit.educationalInstitutionId
+                == educational_models.EducationalInstitution.id,
+            ),
+        )
+        .filter(models.Cashflow.batchId == batch_id)
+        .distinct(models.Pricing.id)
+        .order_by(models.Pricing.id)
+        .with_entities(
+            BusinessUnitVenue.id.label("business_unit_venue_id"),
+            models.BusinessUnit.siret.label("business_unit_siret"),
+            sqla_func.coalesce(
+                BusinessUnitVenue.publicName,
+                BusinessUnitVenue.name,
+            ).label("business_unit_venue_name"),
+            OfferVenue.id.label("offer_venue_id"),
+            OfferVenue.name.label("offer_venue_name"),
+            offers_models.Offer.id.label("offer_id"),
+            offers_models.Offer.name.label("offer_name"),
+            offers_models.Offer.subcategoryId.label("offer_subcategory_id"),
+            bookings_models.Booking.amount.label("booking_amount"),
+            bookings_models.Booking.quantity.label("booking_quantity"),
+            bookings_models.Booking.educationalBookingId.label("educational_booking_id"),
+            bookings_models.Booking.individualBookingId.label("individual_booking_id"),
+            bookings_models.Booking.dateUsed.label("booking_used_date"),
+            payments_models.Deposit.type.label("deposit_type"),
+            models.Pricing.id.label("pricing_id"),
+            models.Pricing.amount.label("pricing_amount"),
+            educational_models.EducationalDeposit.ministry.label("ministry"),
+        )
+        # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
+        # but I am not sure it helps here. We have used
+        # `pcapi.utils.db.get_batches` in the old-style payment code
+        # and that may be what's best here.
+        .yield_per(1000)
+    )
+    return _write_csv(
+        "payment_details",
+        header,
+        rows=query,
+        row_formatter=_payment_details_row_formatter,
+        compress=True,  # it's a large CSV file (> 100 Mb), we should compress it
+    )
+
+
+def _generate_new_payments_file(batch_id: int) -> pathlib.Path:
+    header = [
+        "Identifiant de la BU",
+        "SIRET de la BU",
+        "Libellé de la BU",  # actually, the commercial name of the related venue
         "Type de réservation",
         "Ministère",
         "Prix de la réservation",
