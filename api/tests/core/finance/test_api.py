@@ -225,7 +225,8 @@ class PriceBookingTest:
         queries += 1  # select dependent pricings
         queries += 1  # select latest pricing (to get revenue)
         queries += 1  # select all CustomReimbursementRule
-        queries += 3  # insert 1 Pricing + 2 PricingLine
+        queries += 1  # insert 1 Pricing
+        queries += 1  # insert 2 PricingLine
         queries += 1  # commit
         with assert_num_queries(queries):
             api.price_booking(booking)
@@ -1142,7 +1143,7 @@ def test_generate_payments_file():
     cutoff = datetime.datetime.utcnow()
     batch_id = api.generate_cashflows(cutoff)
 
-    n_queries = 2  # select pricings for bookings + collective bookings
+    n_queries = 1  # select pricings for bookings
     with assert_num_queries(n_queries):
         path = api._generate_payments_file(batch_id)
 
