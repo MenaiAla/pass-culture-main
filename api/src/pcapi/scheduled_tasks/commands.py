@@ -4,6 +4,8 @@ import logging
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+import pcapi.connectors.big_query as bq_connector
+import pcapi.connectors.big_query.queries as bq_queries
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
@@ -37,6 +39,8 @@ from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.notifications import push
+from pcapi.notifications.push import transactional_notifications
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.beneficiary import archive_dms_applications
@@ -347,3 +351,18 @@ def handle_deleted_dms_applications_cron() -> None:
             handle_deleted_dms_applications(procedure_id)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failed to handle deleted DMS applications for procedure %s", procedure_id)
+
+
+@blueprint.cli.command("send_notification_favorites_not_booked")
+@log_cron_with_transaction
+def send_notification_favorites_not_booked() -> None:
+    backend = bq_connector.get_backend()
+    rows = bq_queries.FavoritesNotBooked(backend).execute()
+
+    for row in rows:
+        try:
+            notification_data = transactional_notifications.get_favorites_not_booked_notification_data(row)
+            if notification_data:
+                push.send_transactional_notification(notification_data)
+        except Exception:  # pylint: disable=broad-except
+            logger.error("Favorites not booked: failed to send notification", extra={"row": str(row)})

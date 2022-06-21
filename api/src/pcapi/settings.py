@@ -401,3 +401,6 @@ BACKOFFICE_SERVICE_ACCOUNT_KEY = json.loads(
     base64.b64decode(os.environ.get("BACKOFFICE_SERVICE_ACCOUNT_KEY", "")) or "{}"
 )
 BACKOFFICE_USER_EMAIL = os.environ.get("BACKOFFICE_USER_EMAIL", "dummy.backoffice@example.com")
+
+# GOOGLE BIG QUERY
+BIG_QUERY_NOTIFICATIONS_TABLE_BASE = os.environ.get("BIG_QUERY_NOTIFICATIONS_TABLE_BASE", "")

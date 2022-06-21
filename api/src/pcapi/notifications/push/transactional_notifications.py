@@ -3,6 +3,7 @@ from enum import Enum
 import logging
 from typing import Optional
 
+import pcapi.connectors.big_query.queries as bq_queries
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
@@ -18,6 +19,7 @@ class GroupId(Enum):
     TODAY_STOCK = "Today_stock"
     OFFER_LINK = "Offer_link"
     SOON_EXPIRING_BOOKINGS = "Soon_expiring_bookings"
+    FAVORITES_NOT_BOOKED = "Favorites_not_booked"
 
 
 class TransactionalNotificationMessage(BaseModel):
@@ -94,4 +96,18 @@ def get_soon_expiring_bookings_with_offers_notification_data(booking: Booking) -
         user_ids=[booking.userId],
         message=TransactionalNotificationMessage(title="Tu n'as pas récupéré ta réservation", body=body),
         extra={"deeplink": booking_app_link(booking)},
+    )
+
+
+def get_favorites_not_booked_notification_data(
+    row: bq_queries.FavoritesNotBookedModel,
+) -> TransactionalNotificationData:
+    msg_title = "Ne t’arrête pas en si bon chemin 😮"
+    msg_body = f"{row.offerName} t’attend sur le pass Culture !"
+
+    return TransactionalNotificationData(
+        group_id=GroupId.FAVORITES_NOT_BOOKED.value,
+        user_ids=[row.userId],
+        message=TransactionalNotificationMessage(title=msg_title, body=msg_body),
+        extra={"deeplink": booking_app_link(row.bookingId)},
     )
