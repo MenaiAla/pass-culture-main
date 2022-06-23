@@ -7,6 +7,7 @@ from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy import and_
+from sqlalchemy.sql import expression
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import subcategories
@@ -281,7 +282,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     description = sa.Column(sa.Text, nullable=True)
 
-    isDraft = sa.Column(sa.Boolean, nullable=True)
+    isDraft = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
 
     withdrawalDetails = sa.Column(sa.Text, nullable=True)
 
