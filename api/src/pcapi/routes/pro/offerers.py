@@ -55,9 +55,9 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
 
     # UserOfferer is already JOINed, by get_all_offerers_for_user, if current_user does not have the admin role
     if current_user.has_admin_role:
-        option = sqla_orm.joinedload(offerers_models.Offerer.UserOfferers)
+        option = sqla_orm.joinedload(offerers_models.Offerer.userOfferers)
     else:
-        option = sqla_orm.contains_eager(offerers_models.Offerer.UserOfferers)
+        option = sqla_orm.contains_eager(offerers_models.Offerer.userOfferers)
     offerers_query = offerers_query.options(option)
 
     offerers_query = offerers_query.options(

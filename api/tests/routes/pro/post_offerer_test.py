@@ -121,7 +121,7 @@ class Returns201Test:
         # then
         assert response.status_code == 201
         offerer = Offerer.query.first()
-        assert offerer.UserOfferers[0].user == pro
+        assert offerer.userOfferers[0].user == pro
 
     @patch("pcapi.domain.admin_emails.make_offerer_internal_validation_email")
     @patch("pcapi.connectors.api_entreprises.requests.get")

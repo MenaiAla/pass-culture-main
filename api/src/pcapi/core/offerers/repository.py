@@ -53,7 +53,7 @@ def get_all_offerers_for_user(
         user_offerer_filters = [models.UserOfferer.userId == user.id]
         if not include_non_validated_user_offerers:
             user_offerer_filters.append(models.UserOfferer.isValidated)
-        query = query.join(models.Offerer.UserOfferers).filter(*user_offerer_filters)
+        query = query.join(models.Offerer.userOfferers).filter(*user_offerer_filters)
 
     if validated is not None:
         if validated:

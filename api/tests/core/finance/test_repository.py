@@ -36,7 +36,8 @@ class GetBusinessUnitsTest:
         venue = offerers_factories.VenueFactory()
         business_unit1 = venue.businessUnit
         offerers_factories.VenueFactory(businessUnit=business_unit1)
-        pro = users_factories.ProFactory(offerers=[venue.managingOfferer])
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
         _other_venue_with_business_unit = offerers_factories.VenueFactory()
 
         business_unit2 = factories.BusinessUnitFactory()
@@ -66,7 +67,9 @@ class GetBusinessUnitsTest:
         business_unit1 = venue.businessUnit
         offerers_factories.VenueFactory(businessUnit=business_unit1)
         other_venue = offerers_factories.VenueFactory()
-        pro = users_factories.ProFactory(offerers=[venue.managingOfferer, other_venue.managingOfferer])
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=other_venue.managingOfferer)
 
         business_units = list(repository.get_business_units_query(pro, offerer_id=offerer_id))
         assert business_units == [business_unit1]
@@ -76,7 +79,7 @@ class GetBusinessUnitsTest:
         # which they don't have access.
         venue = offerers_factories.VenueFactory()
         offerer_id = venue.managingOffererId
-        pro = users_factories.ProFactory(offerers=[])
+        pro = users_factories.ProFactory()
 
         business_units = repository.get_business_units_query(pro, offerer_id=offerer_id)
         assert not business_units.count()
@@ -103,7 +106,8 @@ class GetInvoicesQueryTest:
         invoice2 = factories.InvoiceFactory(businessUnit=business_unit2)
         venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
         offerer = venue1.managingOfferer
-        pro = users_factories.ProFactory(offerers=[offerer])
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         _venue2 = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             businessUnit=business_unit2,
@@ -124,7 +128,9 @@ class GetInvoicesQueryTest:
     def test_filter_on_date(self):
         business_unit = factories.BusinessUnitFactory()
         venue = offerers_factories.VenueFactory(businessUnit=business_unit)
-        pro = users_factories.ProFactory(offerers=[venue.managingOfferer])
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
+
         _invoice_before = factories.InvoiceFactory(
             businessUnit=business_unit,
             date=datetime.date(2021, 6, 15),
@@ -149,7 +155,8 @@ class GetInvoicesQueryTest:
         business_unit1 = factories.BusinessUnitFactory()
         invoice1 = factories.InvoiceFactory(businessUnit=business_unit1)
         venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
-        pro1 = users_factories.ProFactory(offerers=[venue1.managingOfferer])
+        pro1 = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro1, offerer=venue1.managingOfferer)
         business_unit2 = factories.BusinessUnitFactory()
         _invoice2 = factories.InvoiceFactory(businessUnit=business_unit2)
 
@@ -165,7 +172,8 @@ class GetInvoicesQueryTest:
         business_unit1 = factories.BusinessUnitFactory()
         _invoice1 = factories.InvoiceFactory(businessUnit=business_unit1)
         venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
-        pro1 = users_factories.ProFactory(offerers=[venue1.managingOfferer])
+        pro1 = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro1, offerer=venue1.managingOfferer)
 
         other_business_unit = factories.BusinessUnitFactory()
         _other_venue = offerers_factories.VenueFactory(businessUnit=other_business_unit)

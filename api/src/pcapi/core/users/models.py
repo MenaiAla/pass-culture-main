@@ -223,7 +223,7 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true}""",
     )
-    offerers = orm.relationship("Offerer", secondary="user_offerer")  # type: ignore [misc]
+    userOfferers = orm.relationship("UserOfferer", back_populates="user")  # type: ignore [misc]
     password = sa.Column(sa.LargeBinary(60), nullable=False)
     phoneNumber = sa.Column(sa.String(20), nullable=True, index=True)
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
@@ -381,8 +381,8 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
 
     @property
     def hasPhysicalVenues(self):  # type: ignore [no-untyped-def]
-        for offerer in self.offerers:
-            if any(not venue.isVirtual for venue in offerer.managedVenues):
+        for user_offerer in self.userOfferers:
+            if any(not venue.isVirtual for venue in user_offerer.offerer.managedVenues):
                 return True
 
         return False

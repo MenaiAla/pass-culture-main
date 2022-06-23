@@ -310,7 +310,7 @@ class OfferView(BaseAdminView):
                 recipients = (
                     [offer.venue.bookingEmail]
                     if offer.venue.bookingEmail
-                    else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+                    else [recipient.user.email for recipient in offer.venue.managingOfferer.userOfferers]
                 )
                 send_offer_validation_status_update_email(offer, new_validation, recipients)
                 send_offer_validation_notification_to_administration(new_validation, offer)  # type: ignore [arg-type]
@@ -457,7 +457,7 @@ class ValidationBaseView(BaseAdminView):
                     recipients = (
                         [offer.venue.bookingEmail]
                         if offer.venue.bookingEmail
-                        else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+                        else [recipient.user.email for recipient in offer.venue.managingOfferer.userOfferers]
                     )
                     send_offer_validation_status_update_email(offer, validation_status, recipients)
                     send_offer_validation_notification_to_administration(validation_status, offer)
@@ -506,7 +506,7 @@ class ValidationBaseView(BaseAdminView):
                     recipients = (
                         [offer.venue.bookingEmail]
                         if offer.venue.bookingEmail
-                        else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+                        else [recipient.user.email for recipient in offer.venue.managingOfferer.userOfferers]
                     )
 
                     send_offer_validation_status_update_email(offer, validation_status, recipients)

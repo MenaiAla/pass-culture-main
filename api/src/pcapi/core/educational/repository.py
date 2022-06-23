@@ -518,7 +518,7 @@ def _get_filtered_collective_bookings_query(
 
     collective_bookings_query = (
         CollectiveBooking.query.join(CollectiveBooking.offerer)
-        .join(Offerer.UserOfferers)
+        .join(Offerer.userOfferers)
         .join(CollectiveBooking.collectiveStock)
         .join(CollectiveBooking.venue, isouter=True)
     )
@@ -740,7 +740,7 @@ def get_collective_offer_template_by_id(offer_id: int) -> educational_models.Col
 
 
 def user_has_bookings(user: User) -> bool:
-    bookings_query = CollectiveBooking.query.join(CollectiveBooking.offerer).join(Offerer.UserOfferers)
+    bookings_query = CollectiveBooking.query.join(CollectiveBooking.offerer).join(Offerer.userOfferers)
     return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()
 
 
@@ -835,7 +835,7 @@ def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[in
     if not user.has_admin_role:
         query = query.join(Venue, educational_models.CollectiveOffer.venue)
         query = query.join(Offerer, Venue.managingOfferer)
-        query = query.join(UserOfferer, Offerer.UserOfferers)
+        query = query.join(UserOfferer, Offerer.userOfferers)
         query = query.filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
     query = query.filter(educational_models.CollectiveOffer.id.in_(ids))
     return query
@@ -846,7 +846,7 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: It
     if not user.has_admin_role:
         query = query.join(Venue, educational_models.CollectiveOfferTemplate.venue)
         query = query.join(Offerer, Venue.managingOfferer)
-        query = query.join(UserOfferer, Offerer.UserOfferers)
+        query = query.join(UserOfferer, Offerer.userOfferers)
         query = query.filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
     query = query.filter(educational_models.CollectiveOfferTemplate.id.in_(ids))
     return query

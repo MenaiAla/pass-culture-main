@@ -465,7 +465,7 @@ def _get_filtered_bookings_query(
 
     bookings_query = (
         Booking.query.join(Booking.offerer)
-        .join(Offerer.UserOfferers)
+        .join(Offerer.userOfferers)
         .join(Booking.stock)
         .join(Booking.venue, isouter=True)
     )
@@ -813,7 +813,7 @@ def venues_have_bookings(*venues: Venue) -> bool:
 
 
 def user_has_bookings(user: User) -> bool:
-    bookings_query = Booking.query.join(Booking.offerer).join(Offerer.UserOfferers)
+    bookings_query = Booking.query.join(Booking.offerer).join(Offerer.userOfferers)
     return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()
 
 

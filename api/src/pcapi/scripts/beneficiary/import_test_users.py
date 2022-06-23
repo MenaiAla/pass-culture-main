@@ -71,7 +71,7 @@ def _create_pro_user(row: dict) -> User:
     )
 
     # Validate offerer
-    offerer = user.offerers[0]
+    offerer = user.userOfferers[0].offerer
     offerer.validationToken = None
     offerer.dateValidated = datetime.utcnow()
     repository.save(offerer)

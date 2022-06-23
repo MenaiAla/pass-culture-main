@@ -480,7 +480,7 @@ class Offerer(
 
     name = Column(String(140), nullable=False)
 
-    users = relationship("User", secondary="user_offerer")  # type: ignore [misc]
+    userOfferers = relationship("UserOfferer", back_populates="offerer")
 
     siren = Column(
         String(9), nullable=True, unique=True
@@ -545,9 +545,10 @@ offerer_ts_indexes = [
 
 class UserOfferer(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
     userId = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
-    user = relationship("User", foreign_keys=[userId], backref=backref("UserOfferers"))  # type: ignore [misc]
+    user = relationship("User", back_populates="userOfferers")  # type: ignore [misc]
+
     offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True)
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("UserOfferers"))
+    offerer = relationship("Offerer", back_populates="userOfferers")
 
     __table_args__ = (
         UniqueConstraint(

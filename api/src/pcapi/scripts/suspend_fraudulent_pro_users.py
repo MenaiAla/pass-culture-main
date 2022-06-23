@@ -16,9 +16,9 @@ def suspend_fraudulent_pro_by_email_providers(
 
     if not dry_run:
         for fraudulent_pro in fraudulent_pros:
-            for offerer in fraudulent_pro.offerers:
+            for user_offerer in fraudulent_pro.userOfferers:
                 try:
-                    delete_cascade_offerer_by_id(offerer_id=offerer.id)
+                    delete_cascade_offerer_by_id(offerer_id=user_offerer.offerer.id)
                 except CannotDeleteOffererWithBookingsException:
                     pass
 

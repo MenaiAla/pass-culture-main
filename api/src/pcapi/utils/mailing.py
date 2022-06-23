@@ -105,7 +105,7 @@ def make_offerer_internal_validation_email(  # type: ignore [no-untyped-def]
 
 
 def make_offer_creation_notification_email(offer: Union[Offer, CollectiveOffer, CollectiveOfferTemplate]) -> dict:
-    author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
+    author = getattr(offer, "author", None) or offer.venue.managingOfferer.userOfferers[0].user
     venue = offer.venue
     pro_link_to_offer = build_pc_pro_offer_link(offer)
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
@@ -130,7 +130,7 @@ def make_offer_creation_notification_email(offer: Union[Offer, CollectiveOffer, 
 
 
 def make_offer_rejection_notification_email(offer: Offer) -> dict:
-    author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
+    author = getattr(offer, "author", None) or offer.venue.managingOfferer.userOfferers[0].user
     pro_link_to_offer = build_pc_pro_offer_link(offer)
     venue = offer.venue
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"

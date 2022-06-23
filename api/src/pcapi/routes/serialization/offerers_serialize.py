@@ -207,7 +207,7 @@ class GetOfferersResponseModel(BaseModel):
         offer_counts: dict[int, int],
     ):
         offerer.userHasAccess = user.has_admin_role or any(
-            uo.isValidated for uo in offerer.UserOfferers if uo.userId == user.id
+            uo.user.isValidated for uo in offerer.userOfferers if uo.userId == user.id
         )
         venue_ids = (venue.id for venue in offerer.managedVenues)
         offerer.nOffers = sum((offer_counts.get(venue_id, 0) for venue_id in venue_ids), 0)
