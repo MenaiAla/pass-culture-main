@@ -281,6 +281,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     description = sa.Column(sa.Text, nullable=True)
 
+    isDraft = sa.Column(sa.Boolean, nullable=True)
+
     withdrawalDetails = sa.Column(sa.Text, nullable=True)
 
     withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
