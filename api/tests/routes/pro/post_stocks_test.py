@@ -47,6 +47,7 @@ class Returns201Test:
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert offer.isActive == False
+        assert offer.isDraft == True
         assert offer.validation == OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_not_called()
@@ -80,6 +81,7 @@ class Returns201Test:
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert offer.isActive == True
+        assert offer.isDraft == False
         assert offer.validation == OfferValidationStatus.APPROVED
         assert len(mails_testing.outbox) == 2  # Mail for fraud validation and first offer of venue
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])

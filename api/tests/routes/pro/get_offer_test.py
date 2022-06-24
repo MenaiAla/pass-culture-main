@@ -273,6 +273,7 @@ class Returns200Test:
                     "id": humanize(offerer.id),
                     "idAtProviders": None,
                     "isActive": True,
+                    "isDraft": True,
                     "isValidated": True,
                     "lastProviderId": None,
                     "name": "Test Offerer",
