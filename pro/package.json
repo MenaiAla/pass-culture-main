@@ -50,6 +50,7 @@
     "final-form": "^4.20.6",
     "formik": "^2.2.9",
     "full-icu": "^1.4.0",
+    "hi-base32": "^0.5.1",
     "identity-obj-proxy": "^3.0.0",
     "leaflet": "^1.7.1",
     "libphonenumber-js": "^1.9.44",
