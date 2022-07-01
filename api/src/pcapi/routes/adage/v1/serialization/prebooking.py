@@ -294,8 +294,8 @@ def _get_educational_offer_contact(offer: offers_models.Offer) -> Contact:
         return Contact(email=None, phone=None)
 
     return Contact(
-        email=offer.extraData.get("contactEmail", None),  # type: ignore [union-attr]
-        phone=offer.extraData.get("contactPhone", None),  # type: ignore [union-attr]
+        email=offer.extraData.get("contactEmail", None),
+        phone=offer.extraData.get("contactPhone", None),
     )
 
 
