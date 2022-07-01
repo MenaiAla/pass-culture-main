@@ -79,8 +79,9 @@ def get_all_venues(
 )
 @adage_api_key_required
 def get_venue_by_id(venue_id: int) -> venue_serialization.VenueModelWithOptionalSiret:
-    venue = offerers_repository.find_venue_by_id(venue_id)
-    if venue is None:
+    try:
+        venue = offerers_repository.find_venue_by_id(venue_id)
+    except orm_exc.NoResultFound:
         raise ApiErrors({"code": "VENUE_NOT_FOUND"}, status_code=404)
 
     return venue_serialization.VenueModelWithOptionalSiret.from_orm(venue)

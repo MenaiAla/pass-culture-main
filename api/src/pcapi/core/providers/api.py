@@ -5,6 +5,8 @@ from typing import Iterable
 from typing import Optional
 from typing import Union
 
+from sqlalchemy.orm import exc as orm_exc
+
 from pcapi.core import search
 from pcapi.core.logging import log_elapsed
 from pcapi.core.offerers.models import Venue
@@ -36,9 +38,9 @@ def create_venue_provider(
     if not provider:
         raise providers_exceptions.ProviderNotFound()
 
-    venue = find_venue_by_id(venue_id)
-
-    if not venue:
+    try:
+        venue = find_venue_by_id(venue_id)
+    except orm_exc.NoResultFound:
         raise providers_exceptions.VenueNotFound()
 
     if provider.localClass == "AllocineStocks":

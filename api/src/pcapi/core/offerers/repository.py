@@ -201,8 +201,8 @@ def filter_query_where_user_is_user_offerer_and_is_validated(query, user):  # ty
     return query.join(models.UserOfferer).filter_by(user=user).filter(models.UserOfferer.isValidated)
 
 
-def find_venue_by_id(venue_id: int) -> Optional[models.Venue]:
-    return models.Venue.query.filter_by(id=venue_id).one_or_none()
+def find_venue_by_id(venue_id: int) -> models.Venue:
+    return models.Venue.query.filter_by(id=venue_id).one()
 
 
 def find_venue_by_siret(siret: str) -> Optional[models.Venue]:

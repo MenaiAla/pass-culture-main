@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 import logging
 
+from sqlalchemy.orm import exc as orm_exc
 from sqlalchemy.sql.sqltypes import DateTime
 
 from pcapi.core.bookings.api import _cancel_booking
@@ -21,9 +22,9 @@ def cancel_old_unused_bookings_for_venue(humanized_venue_id: str, reason: Bookin
     if venue_id is None:
         return
 
-    venue = find_venue_by_id(venue_id)
-
-    if venue is None:
+    try:
+        venue = find_venue_by_id(venue_id)
+    except orm_exc.NoResultFound:
         raise Exception(f"There is no venue with id {humanized_venue_id}")
 
     limit_date = datetime.utcnow() - timedelta(days=30)

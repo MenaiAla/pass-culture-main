@@ -1,5 +1,7 @@
 import logging
 
+from sqlalchemy.orm import exc as orm_exc
+
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
@@ -29,9 +31,9 @@ def get_venue_by_siret(authenticated_information: AuthenticatedInformation, sire
 @spectree_serialize(api=blueprint.api, response_model=VenueResponse)
 @adage_jwt_required
 def get_venue_by_id(authenticated_information: AuthenticatedInformation, venue_id: int) -> VenueResponse:
-    venue = offerers_repository.find_venue_by_id(venue_id)
-
-    if venue is None:
+    try:
+        venue = offerers_repository.find_venue_by_id(venue_id)
+    except orm_exc.NoResultFound:
         logger.info("Venue does not exists for given venue_id", extra={"venue_id": venue_id})
         raise ApiErrors({"venue_id": "Aucun lieu n'existe pour ce venue_id"}, status_code=404)
 
