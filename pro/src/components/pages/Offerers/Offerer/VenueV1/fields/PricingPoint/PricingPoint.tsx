@@ -1,10 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
 import { Field, useField } from 'react-final-form'
 import React, { useEffect, useState } from 'react'
 import Button from 'ui-kit/Button/Button'
 import { IAPIVenue } from 'core/Venue/types'
 import Icon from 'components/layout/Icon'
 import styles from './PricingPoint.module.scss'
+import { api } from 'apiClient/api'
 
 interface IPricingPointProps {
   readOnly: boolean
@@ -26,14 +26,14 @@ const PricingPoint = ({ readOnly, offerer, venue }: IPricingPointProps) => {
 
   const handleClick = async () => {
     const pricingPointId = pricingPointSelectField.input.value
-
-    pcapi
-      .editVenuePricingPoint(venue?.id, {
-        pricingPointId: pricingPointId,
-      })
-      .then(() => {
-        setIsInputDisabled(true)
-      })
+    if(venue.id) {
+      api.linkVenueToPricingPoint(venue.id, {
+          pricingPointId: pricingPointId,
+        })
+        .then(() => {
+          setIsInputDisabled(true)
+        })
+    }
   }
 
   return (
@@ -58,7 +58,7 @@ const PricingPoint = ({ readOnly, offerer, venue }: IPricingPointProps) => {
         </span>
       </div>
 
-      {venue.pricingPoint ? (
+      {/*venue.pricingPoint ? (
         <div className={styles['dropDown-container']}>
           <div className="control control-select">
             <div className={`${styles['select']} select`}>
@@ -67,21 +67,23 @@ const PricingPoint = ({ readOnly, offerer, venue }: IPricingPointProps) => {
                 component="select"
                 id="venue-siret"
                 name="venueSiret"
+                defaultValue={venue.pricingPoint.id || undefined}
               >
                 <option value="">{`${venue.pricingPoint.venueName} - ${venue.pricingPoint.siret}`}</option>
               </Field>
             </div>
           </div>
         </div>
-      ) : (
+      ) : (*/
         <div className={styles['dropDown-container']}>
           <div className="control control-select">
             <div className={`${styles['select']} select`}>
               <Field
-                disabled={isInputDisabled || readOnly}
+                disabled={venue.pricingPoint.id ? true : isInputDisabled || readOnly}
                 component="select"
                 id="venue-siret"
                 name="venueSiret"
+                defaultValue={venue.pricingPoint.id || undefined}
               >
                 <option value="">Sélectionner un lieu dans la liste</option>
                 {offerer.managedVenues.map(
@@ -114,7 +116,7 @@ const PricingPoint = ({ readOnly, offerer, venue }: IPricingPointProps) => {
             </>
           )}
         </div>
-      )}
+      }
     </div>
   )
 }
