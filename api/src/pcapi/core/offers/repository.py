@@ -38,7 +38,7 @@ from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.models import db
-from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import OfferStatus, OfferValidationStatus
 from pcapi.utils.custom_keys import compute_venue_reference
 
 
@@ -421,26 +421,46 @@ def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
 
 
 def get_active_offers_count_for_venue(venue_id: int) -> int:
-    active_offers_query = Offer.query.filter(Offer.venueId == venue_id)
-    active_offers_query = _filter_by_status(active_offers_query, OfferStatus.ACTIVE.name)
+    active_offers_query = db.session.query(func.count(Offer.id))
+    active_offers_query = active_offers_query.filter(Offer.venueId == venue_id)
+    # faster and specialized status == ACTIVE implementation
+    active_offers_query = active_offers_query.join(Stock, Offer.stock)
+    active_offers_query = active_offers_query.filter(
+        Offer.validation == OfferValidationStatus.APPROVED,
+        offer.isActive.is_(True),
+        stock.isSoftDeleted.is_(False)
+
+    )
+
 
     active_offers_query = active_offers_query.filter(Offer.isEducational.is_(False))
 
-    n_active_offers = active_offers_query.distinct(Offer.id).count()
+    n_active_offers = active_offers_query.scalar()
 
-    n_active_collective_offer = (
-        CollectiveOffer.query.filter(CollectiveOffer.venueId == venue_id)
-        .filter(CollectiveOffer.status == OfferStatus.ACTIVE.name)
-        .distinct(CollectiveOffer.id)
-        .count()
+    active_collective_offer_query = db.session.query(func.count(CollectiveOffer.id))
+    active_collective_offer_query = active_collective_offer_query.filter(
+        CollectiveOffer.venueId==venue_id,
+    )
+    # faster and specialized status == ACTIVE implementation
+    active_collective_offer_query = active_collective_offer_query.join(CollectiveStock, CollectiveOffer.collectiveStock)
+    active_collective_offer_query = active_collective_offer_query.filter(
+        CollectiveStock.bookingLimitDatetime <= func.now(),
+        CollectiveOffer.isActive.is_(True),
+        CollectiveOffer.validation == OfferValidationStatus.APPROVED,
     )
 
-    n_active_collective_offer_template = (
-        CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.venueId == venue_id)
-        .filter(CollectiveOfferTemplate.status == OfferStatus.ACTIVE.name)
-        .distinct(CollectiveOfferTemplate.id)
-        .count()
+    n_active_collective_offer = active_collective_offer_query.scalar()
+
+
+    active_collective_offer_template_query = db.session.query(func.count(CollectiveOfferTemplate.id))
+    active_collective_offer_template_query = active_collective_offer_template_query.filter(CollectiveOfferTemplate.venueId==venue_id)
+    # faster and specialized status == ACTIVE implementation
+    active_collective_offer_template_query = active_collective_offer_template_query.filter(
+        CollectiveOfferTemplate.isActive.is_(True),
+        CollectiveOfferTemplate.validation == OfferValidationStatus.APPROVED
     )
+
+    n_active_collective_offer_template = active_collective_offer_template_query.scalar()
 
     return n_active_offers + n_active_collective_offer + n_active_collective_offer_template
 
