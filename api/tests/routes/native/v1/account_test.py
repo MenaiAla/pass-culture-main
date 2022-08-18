@@ -14,6 +14,7 @@ from dateutil.relativedelta import relativedelta
 from freezegun.api import freeze_time
 import jwt
 import pytest
+from sib_api_v3_sdk.rest import ApiException as SendinblueAPIException
 
 from pcapi import settings
 from pcapi.core.bookings import factories as booking_factories
@@ -1116,6 +1117,22 @@ class SendPhoneValidationCodeTest:
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
         assert fraud_check.reason == "Le numéro saisi est interdit"
         assert content["phone_number"] == "+33601020304"
+
+    @patch(
+        "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
+    )
+    @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    def test_sendinblue_api_error(self, send_sms_mock, client):
+        # user's phone number should be in international format (E.164): +33601020304
+        user = users_factories.UserFactory(isEmailValidated=True)
+        send_sms_mock.side_effect = SendinblueAPIException(status=400)
+
+        client.with_token(email=user.email)
+
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_PHONE_NUMBER"
 
 
 class ValidatePhoneNumberTest:
