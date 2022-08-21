@@ -40,6 +40,7 @@ if IS_PROD or IS_INTEGRATION:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     _default_email_backend = "pcapi.core.mails.backends.sendinblue.SendinblueBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.GoogleDriveBackend"
+    _default_google_big_query_backend = "pcapi.connectors.big_query.connector.BaseBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
@@ -47,6 +48,7 @@ elif IS_STAGING or IS_TESTING:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     _default_email_backend = "pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.GoogleDriveBackend"
+    _default_google_big_query_backend = "pcapi.connectors.big_query.connector.BaseBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.ToDevSendinblueBackend"
@@ -54,6 +56,7 @@ elif IS_RUNNING_TESTS:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.TestingBackend"
+    _default_google_big_query_backend = "pcapi.connectors.big_query.connector.TestingBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.testing.TestingBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.testing.TestingBackend"
@@ -61,6 +64,7 @@ elif IS_DEV:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.TestingBackend"
+    _default_google_big_query_backend = "pcapi.connectors.big_query.connector.TestingBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.logger.LoggerBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.logger.LoggerBackend"
@@ -317,6 +321,8 @@ CLOUD_TASK_RETRY_DEADLINE = float(os.environ.get("CLOUD_TASK_RETRY_DEADLINE", 60
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 GOOGLE_DRIVE_BACKEND = os.environ.get("GOOGLE_DRIVE_BACKEND", _default_google_drive_backend)
+
+GOOGLE_BIG_QUERY_BACKEND = os.environ.get("GOOGLE_BIG_QUERY_BACKEND", _default_google_big_query_backend)
 
 
 # RATE LIMITER

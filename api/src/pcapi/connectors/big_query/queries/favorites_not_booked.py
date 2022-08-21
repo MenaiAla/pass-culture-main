@@ -12,7 +12,7 @@ class FavoritesNotBookedModel(pydantic.BaseModel):
 
 
 class FavoritesNotBooked(BaseQuery):
-    query = f"""
+    raw_query = f"""
         SELECT
             *
         FROM

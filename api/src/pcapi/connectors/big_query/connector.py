@@ -21,13 +21,14 @@ RowIterator = typing.Generator[Row, None, None]
 
 
 class BaseBackend:
-    def __init__(self):
-        self._client = None
+    def __init__(self) -> None:
+        self._client: bigquery.Client | None = None
 
     @property
-    def client(self):
+    def client(self) -> bigquery.Client:
         if not self._client:
-            self.client = bigquery.Client()
+            self._client = bigquery.Client()
+        return self._client
 
     def run_query(self, query: str, page_size: int) -> RowIterator:
         query_job = self.client.query(query)
@@ -43,5 +44,5 @@ class TestingBackend(BaseBackend):
         self.rows = rows
         super().__init__()
 
-    def run_query(self, *args, **kwargs) -> TestingRowIterator:
+    def run_query(self, *args: TestingRow, **kwargs: TestingRow) -> TestingRowIterator:
         return (row for row in self.rows)
