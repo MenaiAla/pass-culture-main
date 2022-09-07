@@ -37,7 +37,7 @@ UNDERAGE_BENEFICIARIES_TAGS = [
     "16-years-old-underage-beneficiary",
     "17-years-old-underage-beneficiary",
 ]
-OTHER_USERS_TAGS = ["has-signed-up", "has-booked-activation"]
+OTHER_USERS_TAGS = ["has-signed-up"]
 AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
 GRANT_18_DEPOSIT_VERSIONS = [1, 2]
 
