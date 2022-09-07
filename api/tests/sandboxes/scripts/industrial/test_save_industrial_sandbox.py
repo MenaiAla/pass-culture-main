@@ -15,11 +15,11 @@ class SaveIndustrialSandboxTest:
     def test_creations(self, clear_tests_invoices_bucket):
         save_industrial_sandbox()
 
-        assert offerers_models.Offerer.query.count() == 32
-        assert offerers_models.Venue.query.count() == 46
-        assert finance_models.BusinessUnit.query.count() == 46
-        assert offers_models.Offer.query.count() == 127
-        assert offers_models.Stock.query.count() == 128
+        assert offerers_models.Offerer.query.count() == 31
+        assert offerers_models.Venue.query.count() == 44
+        assert finance_models.BusinessUnit.query.count() == 44
+        assert offers_models.Offer.query.count() == 125
+        assert offers_models.Stock.query.count() == 126
         assert 170 <= bookings_models.Booking.query.count() <= 200
         assert finance_models.Invoice.query.count() == 3
         assert finance_models.Cashflow.query.count() == 4

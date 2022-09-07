@@ -6,7 +6,6 @@ from random import choice
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
@@ -73,18 +72,6 @@ def _create_bookings_for_other_beneficiaries(
         if offer_index % OFFER_WITH_BOOKINGS_RATIO != 0:
             continue
 
-        user_has_only_activation_booked = (
-            "has-booked-activation" in user.email or "has-confirmed-activation" in user.email
-        )
-
-        is_activation_offer = offer.product.subcategoryId in (
-            subcategories.ACTIVATION_EVENT.id,
-            subcategories.ACTIVATION_THING.id,
-        )
-
-        if user_has_only_activation_booked and not is_activation_offer:
-            continue
-
         for (index, stock) in enumerate(offer.stocks):
             # every STOCK_MODULO RECO will have several stocks
             if index > 0 and offer_index % (OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO + index):
@@ -92,14 +79,7 @@ def _create_bookings_for_other_beneficiaries(
 
             booking_name = "{} / {} / {}".format(offer_name, user_name, str(token))
 
-            if is_activation_offer:
-                is_used = (
-                    "has-confirmed-activation" in user.email
-                    or "has-booked-some" in user.email
-                    or "has-no-more-money" in user.email
-                )
-            else:
-                is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
+            is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
             if is_used:
                 stock.beginningDatetime = datetime.utcnow() - timedelta(days=2)
@@ -152,16 +132,9 @@ def _create_has_booked_some_bookings(
         if all_credit.remaining < MAX_RATIO_OF_INITIAL_CREDIT * float(all_credit.initial):
             break
 
-        is_activation_offer = offer.product.subcategoryId in (
-            subcategories.ACTIVATION_EVENT.id or subcategories.ACTIVATION_THING.id
-        )
-
         stock = choice(offer.stocks)
 
-        if is_activation_offer:
-            is_used = True
-        else:
-            is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
+        is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
         if is_used:
             stock.beginningDatetime = datetime.utcnow() - timedelta(days=2)
