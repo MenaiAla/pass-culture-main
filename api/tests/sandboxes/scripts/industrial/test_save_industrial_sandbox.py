@@ -9,7 +9,7 @@ from pcapi.sandboxes.scripts.creators.industrial import save_industrial_sandbox
 from tests.conftest import clean_database
 
 
-@pytest.mark.skip("This is a very long-running test used to help working on the sandbox")
+# @pytest.mark.skip("This is a very long-running test used to help working on the sandbox")
 class SaveIndustrialSandboxTest:
     @clean_database
     def test_creations(self, clear_tests_invoices_bucket):
