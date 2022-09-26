@@ -12,13 +12,15 @@ from pcapi.models.api_errors import ForbiddenError
 
 
 class DMSWebhookRequest(pydantic.BaseModel):
+    # These IDs are actually the Demarche number and Dossier number integers, not their Scalar IDs
+    # but they were named so in the DMS webhook docs.
     procedure_id: int
     dossier_id: int
     state: dms_models.GraphQLApplicationStates
     updated_at: datetime.datetime
 
     @pydantic.validator("updated_at", pre=True)
-    def validate_udpated_at(cls, value):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_updated_at(cls, value):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S %z")
 
 

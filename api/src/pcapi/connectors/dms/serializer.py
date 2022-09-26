@@ -4,6 +4,7 @@ import re
 from dateutil import parser as date_parser
 
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.finance.dms import models as finance_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
@@ -152,3 +153,68 @@ def _parse_dms_civility(civility: dms_models.Civility) -> users_models.GenderEnu
     if civility == dms_models.Civility.MME:
         return users_models.GenderEnum.F
     return None
+
+
+class VenueApplicationAnnotationLabels:
+    ERROR = "Erreur traitement pass Culture"
+    VENUE_URL = "URL du lieu"
+
+
+def parse_venue_bank_information_graphql(
+    application_detail: dms_models.DmsApplicationResponse,
+) -> finance_models.DMSContent:
+
+    application_number = application_detail.number
+    latest_modification_datetime = application_detail.latest_modification_datetime
+    processed_datetime = application_detail.processed_datetime
+    registration_datetime = application_detail.draft_date
+    state = application_detail.state
+    procedure_number = application_detail.procedure.number
+
+    # Fields that may be filled
+    bic = None
+    dms_token = None
+    error_annotation = None
+    iban = None
+    siret = None
+    venue_url_annotation = None
+
+    for field in application_detail.fields:
+        label = field.label.lower()
+        value = field.value or ""
+
+        if dms_models.ProFieldLabelKeyword.BIC.value in label:
+            bic = value
+        elif dms_models.ProFieldLabelKeyword.DMS_TOKEN.value in label:
+            dms_token = value
+        elif dms_models.ProFieldLabelKeyword.IBAN.value in label:
+            dms_token = value
+        elif dms_models.ProFieldLabelKeyword.SIRET.value in label:
+            # XXX: check it correctly gets the stringValue
+            siret = value
+
+    for annotation in application_detail.annotations:
+        match annotation.label:
+            case VenueApplicationAnnotationLabels.ERROR:
+                error_annotation = fraud_models.DmsAnnotation(
+                    id=annotation.id, label=annotation.label, text=annotation.value
+                )
+            case VenueApplicationAnnotationLabels.VENUE_URL:
+                venue_url_annotation = fraud_models.DmsAnnotation(
+                    id=annotation.id, label=annotation.label, text=annotation.value
+                )
+
+    return finance_models.DMSContent(
+        application_number=application_number,
+        bic=bic,
+        dms_token=dms_token,
+        iban=iban,
+        latest_modification_datetime=latest_modification_datetime,
+        procedure_number=procedure_number,
+        processed_datetime=processed_datetime,
+        registration_datetime=registration_datetime,
+        siret=siret,
+        state=state,
+        error_annotation=error_annotation,
+        venue_url_annotation=venue_url_annotation,
+    )

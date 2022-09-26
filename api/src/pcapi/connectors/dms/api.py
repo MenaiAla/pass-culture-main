@@ -183,9 +183,9 @@ class DMSGraphQLClient:
 
         return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object
 
-    def get_bank_info(self, dossier_id: int) -> Any:
-        variables = {"dossierNumber": dossier_id}
-        return self.execute_query(GET_BANK_INFO_QUERY_NAME, variables=variables)
+    def get_bank_info_application_details(self, application_number: int) -> dms_models.DmsApplicationResponse:
+        response = self.execute_query(GET_BANK_INFO_QUERY_NAME, variables={"dossierNumber": application_number})
+        return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object
 
     def update_text_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> dict:
         variables = {

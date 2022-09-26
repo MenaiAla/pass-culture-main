@@ -93,7 +93,7 @@ class SaveVenueBankInformationsTest:
         def test_draft_application(self, mock_archive_dossier, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+            mock_dms_graphql_client.return_value.get_bank_info_application_details.return_value = (
                 dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.draft.value, dms_token=venue.dmsToken
                 )
@@ -111,7 +111,7 @@ class SaveVenueBankInformationsTest:
         def test_on_going_application(self, mock_archive_dossier, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+            mock_dms_graphql_client.return_value.get_bank_info_application_details.return_value = (
                 dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.on_going.value, dms_token=venue.dmsToken
                 )
@@ -129,7 +129,7 @@ class SaveVenueBankInformationsTest:
         def test_accepted_application(self, mock_archive_dossier, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+            mock_dms_graphql_client.return_value.get_bank_info_application_details.return_value = (
                 dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
                 )
@@ -148,7 +148,7 @@ class SaveVenueBankInformationsTest:
         def test_refused_application(self, mock_archive_dossier, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+            mock_dms_graphql_client.return_value.get_bank_info_application_details.return_value = (
                 dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.refused.value, dms_token=venue.dmsToken
                 )
@@ -166,7 +166,7 @@ class SaveVenueBankInformationsTest:
         def test_without_continuation_application(self, mock_archive_dossier, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+            mock_dms_graphql_client.return_value.get_bank_info_application_details.return_value = (
                 dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.without_continuation.value, dms_token=venue.dmsToken
                 )
@@ -198,7 +198,7 @@ class SaveVenueBankInformationsTest:
                 iban="FR8888888888888888888888888",
                 venue=venue_with_accpeted_bank_info,
             )
-            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+            mock_dms_graphql_client.return_value.get_bank_info_application_details.return_value = (
                 dms_creators.get_bank_info_response_procedure_v4(dms_token=venue_with_accpeted_bank_info.dmsToken)
             )
 
@@ -222,7 +222,7 @@ class SaveVenueBankInformationsTest:
                 status=BankInformationStatus.DRAFT,
             )
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+            mock_dms_graphql_client.return_value.get_bank_info_application_details.return_value = (
                 dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.on_going.value, dms_token=venue_with_accpeted_bank_info.dmsToken
                 )
@@ -267,7 +267,9 @@ class SaveVenueBankInformationsTest:
                 dms_token=other_venue.dmsToken
             )
             duplicate_bank_info_return["dossier"]["champs"][3]["value"] = "NL36INGB2682297498"
-            mock_dms_graphql_client.return_value.get_bank_info.return_value = duplicate_bank_info_return
+            mock_dms_graphql_client.return_value.get_bank_info_application_details.return_value = (
+                duplicate_bank_info_return
+            )
 
             # When
             with pytest.raises(ApiErrors) as errors:

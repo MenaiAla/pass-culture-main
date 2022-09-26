@@ -90,7 +90,7 @@ def get_venue_bank_information_application_details_by_application_id(
     procedure_version: int = 4,
 ) -> ApplicationDetail:
     client = api_dms.DMSGraphQLClient()
-    raw_data = client.get_bank_info(int(application_id))
+    raw_data = client.get_bank_info_application_details(int(application_id))
     data = parse_raw_bank_info_data(raw_data, procedure_version)
     return ApplicationDetail(
         siren=data.get("siren", None),

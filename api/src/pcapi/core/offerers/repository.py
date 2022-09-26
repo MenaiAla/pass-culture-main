@@ -229,6 +229,10 @@ def find_venue_by_siret(siret: str) -> models.Venue | None:
     return models.Venue.query.filter_by(siret=siret).one_or_none()
 
 
+def find_venue_by_dms_token(dms_token: str) -> models.Venue | None:
+    return models.Venue.query.filter_by(dmsToken=dms_token).one_or_none()
+
+
 def get_all_venues_by_offerer_id(offerer_id: int) -> list[models.Venue]:
     return models.Venue.query.filter_by(managingOffererId=offerer_id).all()
 

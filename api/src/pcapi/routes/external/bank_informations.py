@@ -1,16 +1,15 @@
+from pcapi.connectors.dms import api as dms_connector_api
+from pcapi.core.finance.dms import api as dms_finance_api
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.validation.routes.dms import BankInformationDmsFormModel
-from pcapi.validation.routes.dms import BankInformationDmsResponseModel
-from pcapi.validation.routes.dms import require_dms_token
-from pcapi.workers.bank_information_job import bank_information_job
+from pcapi.validation.routes import dms as dms_validation
 
 
-@public_api.route("/bank_informations/venue/application_update", methods=["POST"])
-@require_dms_token
-@spectree_serialize(on_success_status=202, on_error_statuses=[400, 403])
-def update_venue_demarches_simplifiees_application(
-    form: BankInformationDmsFormModel,
-) -> BankInformationDmsResponseModel:
-    bank_information_job.delay(form.dossier_id, form.procedure_id)
-    return BankInformationDmsResponseModel()
+@public_api.post("/bank_informations/venue/application_update")
+@dms_validation.require_dms_token
+@spectree_serialize(on_success_status=202, json_format=False, on_error_statuses=[400])
+def update_venue_dms_application(form: dms_validation.DMSWebhookRequest) -> None:
+    dms_application = dms_connector_api.DMSGraphQLClient().get_bank_info_application_details(
+        application_number=form.dossier_id
+    )
+    dms_finance_api.handle_dms_venue_application(dms_application)

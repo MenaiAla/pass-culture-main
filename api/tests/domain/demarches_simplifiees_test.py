@@ -24,7 +24,9 @@ class GetVenueBankInformationApplicationDetailsByApplicationIdTest:
     def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, annotation):
         # Given
         updated_at = datetime(2020, 1, 3)
-        DMSGraphQLClient.return_value.get_bank_info.return_value = get_bank_info_response_procedure_v2(annotation)
+        DMSGraphQLClient.return_value.get_bank_info_application_details.return_value = (
+            get_bank_info_response_procedure_v2(annotation)
+        )
 
         # When
         application_details = get_venue_bank_information_application_details_by_application_id("8", 3)

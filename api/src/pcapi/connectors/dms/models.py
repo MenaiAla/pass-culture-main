@@ -87,6 +87,17 @@ class FieldLabelKeyword(enum.Enum):
     TELEPHONE = "numéro de téléphone"
 
 
+class ProFieldLabelKeyword(enum.Enum):
+    """
+    Ces champs sont tirés des labels des questions des démarches DMS d'ajout de CB Pro
+    """
+
+    BIC = "bic"
+    DMS_TOKEN = "identifiant du lieu"
+    IBAN = "iban"
+    SIRET = "siret"
+
+
 class ApplicationPageInfo(pydantic.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/dossierspageinfo.doc.html"""
 
