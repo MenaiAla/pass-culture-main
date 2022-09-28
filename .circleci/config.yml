@@ -942,7 +942,7 @@ jobs:
               if [[ $STATUS == "False" ]]; then
                 kubectl -n <<parameters.helm_environment>> get events --field-selector involvedObject.name=pcapi-<<parameters.helm_environment>>,involvedObject.kind=ExternalSecret
                 helm -n <<parameters.helm_environment>> rollback <<parameters.helm_environment>>
-                exit 1
+                exit 2
               fi
             else
               exit $(($HELMFILE_EXIT_CODE))
