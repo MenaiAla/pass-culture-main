@@ -1,6 +1,7 @@
 import enum
 import logging
 from typing import Type
+from collections import defaultdict
 
 import sqlalchemy as sa
 
@@ -89,6 +90,24 @@ class Permission(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     )
 
 
+
+class Roles(enum.Enum):
+    """
+    This enum is synced with the permission table in DB, thanks to the
+    sync_enum_with_db_field function which is called when the app is deployed
+    """
+
+    ADMIN = "admin"
+    SUPPORT_N1 = "support-N1"
+    SUPPORT_N2 = "support-N2"
+    SUPPORT_PRO = "support-PRO"
+    FRAUDE_CONFORMITE = "fraude-conformite"
+    DAF = "daf"
+    BIZDEV = "bizdev"
+    PROGRAMMATION = "programmation"
+    PRODUCT_MANAGEMENT = "product-management"
+
+
 class Role(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "role"
 
@@ -96,3 +115,36 @@ class Role(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     permissions = sa.orm.relationship(  # type: ignore [misc]
         Permission, secondary=role_permission_table, back_populates="roles"
     )
+
+
+ROLES_PERMISSIONS_MAPPING = defaultdict(list) | {
+    Roles.ADMIN: {
+        Permissions.MANAGE_PERMISSIONS,
+        Permissions.SEARCH_PUBLIC_ACCOUNT,
+        Permissions.REVIEW_PUBLIC_ACCOUNT,
+        Permissions.READ_PUBLIC_ACCOUNT,
+        Permissions.MANAGE_PUBLIC_ACCOUNT,
+        Permissions.READ_PRO_ENTITY,
+        Permissions.SEARCH_PRO_ACCOUNT,
+    },
+    Roles.FRAUDE_CONFORMITE: {
+        Permissions.SEARCH_PUBLIC_ACCOUNT,
+        Permissions.READ_PUBLIC_ACCOUNT,
+        Permissions.MANAGE_PUBLIC_ACCOUNT,
+        Permissions.REVIEW_PUBLIC_ACCOUNT,
+    },
+    Roles.SUPPORT_N1: {
+        Permissions.SEARCH_PUBLIC_ACCOUNT,
+        Permissions.READ_PUBLIC_ACCOUNT,
+    },
+    Roles.SUPPORT_N2: {
+        Permissions.MANAGE_PUBLIC_ACCOUNT,
+        Permissions.SEARCH_PUBLIC_ACCOUNT,
+        Permissions.READ_PUBLIC_ACCOUNT,
+    },
+    Roles.SUPPORT_PRO: [
+        Permissions.MANAGE_PUBLIC_ACCOUNT,
+        Permissions.SEARCH_PUBLIC_ACCOUNT,
+        Permissions.READ_PUBLIC_ACCOUNT,
+    ],
+}

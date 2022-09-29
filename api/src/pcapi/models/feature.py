@@ -126,6 +126,7 @@ class FeatureToggle(enum.Enum):
         "Désactiver l'envoi d'email interne de validation par token pour les structures et rattachements"
     )
     # TEMP_ prefix should be used for temporary feature flags (work in progress, testing, transition...)
+    ENABLE_NEW_BACKOFFICE_POC = "Autorise l'accès au nouveau back-office (POC)"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -191,6 +192,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.DISABLE_STORE_REVIEW,
     FeatureToggle.TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER,
     FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL,
+    FeatureToggle.ENABLE_NEW_BACKOFFICE_POC,
 )
 
 

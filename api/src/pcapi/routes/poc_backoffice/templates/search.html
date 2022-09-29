@@ -1,0 +1,29 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+    <h1>Backoffice pass Culture</h1>
+{% endblock %}
+
+{% block header %}
+    <h2>{{ title }}</h2>
+
+    <form action={{ dst }} method="GET">
+        <input type="text" id="search_terms" name="terms" />
+
+        {% if order_by_options %}
+            <label for="order_by">Sort by column</label>
+            <select id="search_order_by" name="order_by">
+                {% for field in order_by_options %}
+                    <option value={{ field }}>{{ field }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+
+        {% block extra_search_fields %}
+        {% endblock %}
+
+        <br />
+
+        <button type="submit">Search</button>
+    </form>
+{% endblock %}

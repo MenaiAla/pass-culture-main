@@ -1,0 +1,53 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+    <h1>Backoffice pass Culture</h1>
+{% endblock %}
+
+{% block header %}
+    <h2>Search Result</h2>
+    <h3>{{ rows.total }} row(s) found</h3>
+
+    <table>
+        <thead>
+            <tr>
+                {% for col in columns_header %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+                <th>lien</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in rows.items %}
+                <tr>
+                    {% for col in columns %}
+						<td>{{ row[col] }}</td>
+                    {% endfor %}
+					<td>
+						<a href={{ url_for("poc_backoffice_web.get_public_account", user_id=row.id) }}>
+							lien
+						</a>
+					</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Pagination</h3>
+    <ul>
+    {% for page_idx, next_page_url in next_pages_urls %}
+        <li>
+            <a href={{ next_page_url }}>
+                {% if page_idx == rows.page %}
+                    {{ page_idx }} (current)
+                {% else %}
+                    {{ page_idx }}
+                {% endif %}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+
+    <a href={{ new_search_url }}>Nouvelle recherche</a>
+{% endblock %}

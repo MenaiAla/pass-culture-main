@@ -1,0 +1,8 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+    <h2>Public account</h2>
+    <p>{{ user.email }}</p>
+
+    <p><a href={{ url_for("poc_backoffice_web.search_public_accounts") }}>Page de recherche (grand public)</a></p>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "search.html" %}
+
+{% block extra_search_fields %}
+    <label for="order_by">Type</label>
+    <select id="search_pro_type" name="type">
+        {% for field in type_options %}
+            <option value={{ field }}>{{ field }}</option>
+        {% endfor %}
+    </select>
+{% endblock %}

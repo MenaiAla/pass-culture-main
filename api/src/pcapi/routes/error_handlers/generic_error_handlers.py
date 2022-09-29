@@ -4,6 +4,7 @@ import logging
 from flask import Response
 from flask import current_app as app
 from flask import jsonify
+from flask import render_template
 from flask import request
 from sqlalchemy.exc import DatabaseError
 from werkzeug import exceptions as werkzeug_exceptions
@@ -19,6 +20,7 @@ from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.error_handlers.utils import format_sql_statement_params
+from pcapi.routes.poc_backoffice.blueprint import poc_backoffice_web
 from pcapi.utils.human_ids import NonDehumanizableId
 from pcapi.utils.image_conversion import ImageRatioError
 
@@ -26,12 +28,17 @@ from pcapi.utils.image_conversion import ImageRatioError
 logger = logging.getLogger(__name__)
 
 
+HtmlErrorResponse = tuple[str, int]
 ApiErrorResponse = tuple[dict | Response, int]
 
 
 @app.errorhandler(NotFound)
-def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse:
-    return {}, 404
+def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse | HtmlErrorResponse:
+    match request.blueprint:
+        case poc_backoffice_web.name:
+            return render_template("not_found.html"), 404
+        case _:
+            return {}, 404
 
 
 @app.errorhandler(ApiErrors)
