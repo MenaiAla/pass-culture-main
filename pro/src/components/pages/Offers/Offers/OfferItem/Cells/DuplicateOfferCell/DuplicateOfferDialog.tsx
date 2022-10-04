@@ -16,8 +16,7 @@ const DuplicateOfferDialog = ({
     <ConfirmDialog
       onCancel={onCancel}
       onConfirm={() => onConfirm(isCheckboxChecked)}
-      title="Créer une offre réservable pour 
-          un établissement scolaire"
+      title="Créer une offre réservable pour un établissement scolaire"
       confirmText="Créer une offre réservable"
       cancelText="Annuler"
       hideIcon
