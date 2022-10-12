@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>POC Backoffice</title>
-        <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
-    </head>
-    <body>
-        {% block title %}{% endblock %}
-        <header>
-            {% block header %}{% endblock %}
-        </header>
-        <hr />
 
-        <main>{% block content %}{% endblock %}</main>
+<head>
+    <title>POC Backoffice</title>
 
-        <footer>
-            <a href={{ url_for("poc_backoffice_web.home") }}>home</a>
-        </footer>
-    </body>
+    <!-- Required styles for Material Web -->
+    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
+    <link href={{ url_for('static', filename='backoffice/css/base.css' ) }} rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+    {% block title %}{% endblock %}
+    <header>
+        {% block header %}{% endblock %}
+    </header>
+
+    <main>{% block content %}{% endblock %}</main>
+</body>
+
 </html>
