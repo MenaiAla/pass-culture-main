@@ -1,3 +1,43 @@
 body {
-    font-family: 'Roboto', sans-serif;
+    margin: 0;
+}
+
+
+body {
+    display: flex;
+    height: 100vh;
+}
+
+.mdc-drawer-app-content {
+    flex: auto;
+    overflow: auto;
+    position: relative;
+}
+
+.main-content {
+    overflow: auto;
+    height: 100%;
+}
+
+.app-bar {
+    position: absolute;
+}
+
+.mdc-top-app-bar {
+    z-index: 7;
+}
+
+.drawer-main-content {
+    overflow: auto;
+    height: 100%;
+    padding: 0 18px;
+}
+
+.drawer-frame-app-content {
+    position: relative;
+    flex: 1;
+}
+
+.drawer-top-app-bar {
+    position: absolute;
 }
