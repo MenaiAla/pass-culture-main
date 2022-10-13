@@ -1,39 +1,26 @@
 {% extends "layouts/base.html" %}
 
 {% block content %}
-    {% if current_user and not current_user.is_anonymous %}
-        <p>{{ current_user.email }}</p>
-
-        <form action={{ url_for("poc_backoffice_web.logout") }} method="post">
-            <div class="form-example">
-                <input type="submit" value="logout">
-            </div>
-        </form>
-
-        <a href={{ url_for("poc_backoffice_web.search_public_accounts") }}>Page de recherche</a>
-        <a href={{ url_for("poc_backoffice_web.search_pro") }}>Page de recherche (pro)</a>
-    {% else %}
-        <div class="mdc-layout-grid">
-            <div class="mdc-layout-grid__inner">
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet  mdc-layout-grid__cell--span-6-desktop" style="max-width: 600px;">
-                    <div class="mdc-card" style="padding: 64px; margin-top: 20vh;">
-                        <div style="display: flex;justify-content: space-between;align-items: flex-start;">
-                            <img src={{ url_for('static', filename='backoffice/icons/government.svg') }} />
-                            <img src={{ url_for('static', filename='backoffice/icons/passculture.svg') }} class="pass-culture-logo" />
-                        </div>
-                        <hr style="margin: 32px 0;"/>
-                        <h1>Connexion au backoffice</h1>
-                        <a href={{ url_for("poc_backoffice_web.login") }} class="mdc-button mdc-button--raised" style="margin-top: 48px; width: fit-content;">
-                            <span class="mdc-button__label">Se connecter via Google</span>
-                        </a>
+    <div class="mdc-layout-grid">
+        <div class="mdc-layout-grid__inner">
+            <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+            <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet  mdc-layout-grid__cell--span-6-desktop" style="max-width: 600px;">
+                <div class="mdc-card" style="padding: 64px; margin-top: 20vh;">
+                    <div style="display: flex;justify-content: space-between;align-items: flex-start;">
+                        <img src={{ url_for('static', filename='backoffice/icons/government.svg') }} />
+                        <img src={{ url_for('static', filename='backoffice/icons/passculture.svg') }} class="pass-culture-logo" />
                     </div>
+                    <hr style="margin: 32px 0;"/>
+                    <h1>Connexion au backoffice</h1>
+                    <a href={{ url_for("poc_backoffice_web.login") }} class="mdc-button mdc-button--raised" style="margin-top: 48px; width: fit-content;">
+                        <span class="mdc-button__label">Se connecter via Google</span>
+                    </a>
                 </div>
             </div>
         </div>
-        <img
-            src={{ url_for('static', filename='backoffice/login/background.svg') }}
-            style="z-index: -1; position: absolute; top: 3vh; left: 25vw;"
-        />
-    {% endif %}
+    </div>
+    <img
+        src={{ url_for('static', filename='backoffice/login/background.svg') }}
+        style="z-index: -1; position: absolute; top: 3vh; left: 25vw;"
+    />
 {% endblock %}
