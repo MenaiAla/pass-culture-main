@@ -30,8 +30,13 @@ def unauthorized():  # type: ignore
     return render_template("unauthorized.html")
 
 
+@blueprint.poc_backoffice_web.route("/not_enabled", methods=["GET"])
+def not_enabled():  # type: ignore
+    return render_template("not_enabled.html")
+
+
 @blueprint.poc_backoffice_web.route("/login", methods=["GET"])
-@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC, redirect_to=".unauthorized")
+@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC, redirect_to=".not_enabled")
 def login():  # type: ignore
     is_testing_or_dev_without_google_credentials = (settings.IS_TESTING or settings.IS_DEV) and (
         not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
