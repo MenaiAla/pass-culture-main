@@ -10,8 +10,7 @@
             </div>
         </form>
 
-        <p><a href={{ url_for("poc_backoffice_web.search_public_accounts") }}>Page de recherche (grand public)</a></p>
-        <p><a href={{ url_for("poc_backoffice_web.search_pro") }}>Page de recherche (pro)</a></p>
+        <a href={{ url_for("poc_backoffice_web.search") }}>Page de recherche</a>
     {% else %}
         <div class="mdc-layout-grid">
             <div class="mdc-layout-grid__inner">
@@ -24,7 +23,9 @@
                         </div>
                         <hr style="margin: 32px 0;"/>
                         <h1>Connexion au backoffice</h1>
-                        <a href={{ url_for("poc_backoffice_web.login") }} class="mui-btn mui-btn--primary" style="margin-top: 48px;">Se connecter via Google</a>
+                        <a href={{ url_for("poc_backoffice_web.login") }} class="mdc-button mdc-button--raised" style="margin-top: 48px; width: fit-content;">
+                            <span class="mdc-button__label">Se connecter via Google</span>
+                        </a>
                     </div>
                 </div>
             </div>
