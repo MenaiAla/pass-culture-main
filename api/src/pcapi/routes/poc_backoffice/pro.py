@@ -1,5 +1,5 @@
-import typing
 from functools import partial
+import typing
 
 from flask import redirect
 from flask import render_template
@@ -7,15 +7,15 @@ from flask import request
 from flask import url_for
 import pydantic
 
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
-from pcapi.core.offerers import api as offerers_api
 from pcapi.models.feature import FeatureToggle
 
 from . import blueprint
+from . import search_utils
 from . import utils
 from .serialization import pro
-from . import search_utils
 
 
 class Context:

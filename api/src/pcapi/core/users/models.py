@@ -21,8 +21,8 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.functions import func
 
 from pcapi import settings
-from pcapi.core.users import utils as users_utils
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import utils as users_utils
 from pcapi.core.users.constants import SuspensionEventType
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.models import Base
@@ -181,7 +181,6 @@ class BackOfficeUserProfile(Base, Model):  # type: ignore[valid-type, misc]
     user = orm.relationship("User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile")  # type: ignore [misc]
 
     role = sa.Column(sa.Enum(perm_models.Roles, create_constraint=False), nullable=False)
-
 
 
 class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # type: ignore [valid-type, misc]

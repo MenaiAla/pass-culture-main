@@ -1,7 +1,7 @@
+from collections import defaultdict
 import enum
 import logging
 from typing import Type
-from collections import defaultdict
 
 import sqlalchemy as sa
 
@@ -88,7 +88,6 @@ class Permission(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     roles = sa.orm.relationship(  # type: ignore [misc]
         "Role", secondary=role_permission_table, back_populates="permissions"
     )
-
 
 
 class Roles(enum.Enum):

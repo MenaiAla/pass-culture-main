@@ -1,8 +1,8 @@
 import pytest
 
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.users import models as users_models
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
@@ -14,4 +14,3 @@ def legit_user_fixture() -> users_models.User:
     db.session.commit()
 
     return user
-

@@ -7,11 +7,7 @@ from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
-poc_backoffice_web = Blueprint(
-    "poc_backoffice_web",
-    __name__,
-    template_folder="templates"
-)
+poc_backoffice_web = Blueprint("poc_backoffice_web", __name__, template_folder="templates")
 CORS(
     poc_backoffice_web,
     origins=settings.CORS_ALLOWED_ORIGINS,

@@ -50,9 +50,7 @@ class AuthorizedTest:
 
     @override_features(ENABLE_NEW_BACKOFFICE_POC=True)
     def test_view_empty_search_page(self, client, legit_user):  # type: ignore
-        response = client.with_session_auth(legit_user.email).get(
-            self.search_path
-        )
+        response = client.with_session_auth(legit_user.email).get(self.search_path)
         assert response.status_code == 200
 
     @override_features(ENABLE_NEW_BACKOFFICE_POC=True)

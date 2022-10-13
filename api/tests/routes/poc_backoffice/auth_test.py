@@ -3,11 +3,11 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.core.permissions import models as perm_models
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

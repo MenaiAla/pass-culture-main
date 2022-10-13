@@ -11,8 +11,8 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.apis import private_api
     from pcapi.routes.apis import public_api
     from pcapi.routes.backoffice.blueprint import backoffice_blueprint
-    from pcapi.routes.poc_backoffice.blueprint import poc_backoffice_web
     from pcapi.routes.native.v1.blueprint import native_v1 as native_v1_blueprint
+    from pcapi.routes.poc_backoffice.blueprint import poc_backoffice_web
     from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
     from pcapi.routes.pro.blueprint import pro_public_api_v1 as pro_public_api_v1_blueprint
     from pcapi.routes.pro.blueprint import pro_public_api_v2 as pro_public_api_v2_blueprint
@@ -23,11 +23,11 @@ def install_all_routes(app: Flask) -> None:
     from . import adage
     from . import adage_iframe
     from . import backoffice
-    from . import poc_backoffice
     from . import error_handlers  # pylint: disable=unused-import
     from . import external
     from . import internal
     from . import native
+    from . import poc_backoffice
     from . import pro
     from . import saml
     from . import shared

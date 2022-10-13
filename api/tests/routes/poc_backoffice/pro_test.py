@@ -1,8 +1,9 @@
 from flask import url_for
 import pytest
 
-from pcapi.core.testing import override_features
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.testing import override_features
+
 from . import search_page
 
 
@@ -18,30 +19,17 @@ class ProAuthorizedTest(search_page.AuthorizedTest):
 
     @override_features(ENABLE_NEW_BACKOFFICE_POC=True)
     def test_search_result_page_user(self, client, legit_user):
-        self._search_result_page_base(
-            client,
-            legit_user,
-            offerers_factories.UserOffererFactory().user.email,
-            "user"
-        )
+        self._search_result_page_base(client, legit_user, offerers_factories.UserOffererFactory().user.email, "user")
 
     @override_features(ENABLE_NEW_BACKOFFICE_POC=True)
     def test_search_result_page_offerer(self, client, legit_user):
         self._search_result_page_base(
-            client,
-            legit_user,
-            offerers_factories.UserOffererFactory().offerer.name,
-            "offerer"
+            client, legit_user, offerers_factories.UserOffererFactory().offerer.name, "offerer"
         )
 
     @override_features(ENABLE_NEW_BACKOFFICE_POC=True)
     def test_search_result_page_venue(self, client, legit_user):
-        self._search_result_page_base(
-            client,
-            legit_user,
-            offerers_factories.VenueFactory().name,
-            "venue"
-        )
+        self._search_result_page_base(client, legit_user, offerers_factories.VenueFactory().name, "venue")
 
     def _search_result_page_base(self, client, legit_user, search_term, search_type):
         url = url_for(self.endpoint, terms=search_term, type=search_type)

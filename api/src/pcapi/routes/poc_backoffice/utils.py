@@ -42,6 +42,7 @@ def permission_required(permission: perm_models.Permissions, redirect_to: str) -
     Ensure that the current user is connected and that it has the
     expected permissions.
     """
+
     def wrapper(func: typing.Callable) -> typing.Callable:
         @wraps(func)
         def wrapped(*args, **kwargs) -> tuple[Response, int] | typing.Callable:  # type: ignore[no-untyped-def]
