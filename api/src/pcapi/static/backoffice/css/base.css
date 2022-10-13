@@ -41,3 +41,9 @@ body {
 .drawer-top-app-bar {
     position: absolute;
 }
+
+:root {
+    --mdc-theme-primary: #eb0055;
+    --mdc-theme-secondary: #320096;
+    --mdc-theme-error: #B60025;
+}

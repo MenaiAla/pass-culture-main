@@ -8,21 +8,22 @@
         </div>
         <div class="mdc-drawer__content">
             <nav class="mdc-deprecated-list">
-            <a class="mdc-deprecated-list-item mdc-deprecated-list-item--activated" href="#" aria-current="page">
-                <span class="mdc-deprecated-list-item__ripple"></span>
-                <i class="material-icons mdc-deprecated-list-item__graphic" aria-hidden="true">inbox</i>
-                <span class="mdc-deprecated-list-item__text">Inbox</span>
-            </a>
-            <a class="mdc-deprecated-list-item" href="#">
-                <span class="mdc-deprecated-list-item__ripple"></span>
-                <i class="material-icons mdc-deprecated-list-item__graphic" aria-hidden="true">send</i>
-                <span class="mdc-deprecated-list-item__text">Outgoing</span>
-            </a>
-            <a class="mdc-deprecated-list-item" href="#">
-                <span class="mdc-deprecated-list-item__ripple"></span>
-                <i class="material-icons mdc-deprecated-list-item__graphic" aria-hidden="true">drafts</i>
-                <span class="mdc-deprecated-list-item__text">Drafts</span>
-            </a>
+
+                <hr class="mdc-deprecated-list-divider">
+                <h6 class="mdc-deprecated-list-group__subheader">Jeunes et grand public</h6>
+
+                <a href={{ url_for("poc_backoffice_web.search_public_accounts") }} class="mdc-deprecated-list-item mdc-deprecated-list-item--activated" href="#" aria-current="page">
+                    <span class="mdc-deprecated-list-item__ripple"></span>
+                    <span class="mdc-deprecated-list-item__text">Recherche</span>
+                </a>
+
+                <hr class="mdc-deprecated-list-divider">
+                <h6 class="mdc-deprecated-list-group__subheader">Acteurs Culturels</h6>
+
+                <a href={{ url_for("poc_backoffice_web.search_pro") }} class="mdc-deprecated-list-item" href="#">
+                    <span class="mdc-deprecated-list-item__ripple"></span>
+                    <span class="mdc-deprecated-list-item__text">Recherche</span>
+                </a>
             </nav>
         </div>
     </aside>
@@ -35,9 +36,9 @@
                     </span>
                 </section>
                 <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-                    <button class="mdc-icon-button material-icons mdc-top-app-bar__action-item--unbounded" aria-label="Download">file_download</button>
-                    <button class="mdc-icon-button material-icons mdc-top-app-bar__action-item--unbounded" aria-label="Print this page">print</button>
-                    <button class="mdc-icon-button material-icons mdc-top-app-bar__action-item--unbounded" aria-label="Bookmark this page">bookmark</button>
+                    <form action={{ url_for("poc_backoffice_web.logout") }} method="post">
+                        <button type="submit" value="logout" class="mdc-icon-button material-icons mdc-top-app-bar__action-item--unbounded" aria-label="logout">logout</button>
+                    </form>
                 </section>
             </div>
         </header>
