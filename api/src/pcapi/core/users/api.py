@@ -931,6 +931,10 @@ def search_pro_account(terms: typing.Iterable[str], order_by: list[str] | None =
     return _filter_user_accounts(pro_accounts, terms, order_by=order_by)
 
 
+def get_pro_account_base_query(pro_id: int) -> BaseQuery:
+    return models.User.query.join(offerers_models.UserOfferer).filter(models.User.id == pro_id)
+
+
 def skip_phone_validation_step(user: models.User) -> None:
     if user.phoneValidationStatus == models.PhoneValidationStatusType.VALIDATED:
         raise phone_validation_exceptions.UserPhoneNumberAlreadyValidated()

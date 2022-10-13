@@ -53,6 +53,7 @@ def search_public_accounts():  # type: ignore
         columns=["id", "firstName", "lastName", "email"],
         next_pages_urls=next_pages_urls,
         new_search_url=url_for(".search_public_accounts"),
+        get_link_to_detail=get_public_account_link,
         rows=paginated_rows,
         terms=search_model.terms,
         order_by=search_model.order_by,
@@ -70,3 +71,7 @@ def get_public_account(user_id: int):  # type: ignore
 
 def fetch_rows(search_model: search.SearchUserModel) -> Pagination:
     return search_utils.fetch_paginated_rows(users_api.search_public_account, search_model)
+
+
+def get_public_account_link(user_id: int) -> str:
+    return url_for(".get_public_account", user_id=user_id)

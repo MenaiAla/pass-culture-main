@@ -24,7 +24,7 @@
 						<td>{{ row[col] }}</td>
                     {% endfor %}
 					<td>
-						<a href={{ url_for("poc_backoffice_web.get_public_account", user_id=row.id) }}>
+						<a href={{ get_link_to_detail(row.id) }}>
 							lien
 						</a>
 					</td>

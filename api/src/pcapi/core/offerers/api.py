@@ -941,6 +941,10 @@ def search_offerer(terms: typing.Iterable[str], order_by: list[str] | None = Non
     return offerers
 
 
+def get_offerer_base_query(offerer_id: int) -> BaseQuery:
+    return models.Offerer.query.filter(models.Offerer.id == offerer_id)
+
+
 def search_venue(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
     venues = models.Venue.query.outerjoin(offerers_models.VenueContact)
 
@@ -1011,6 +1015,10 @@ def search_venue(terms: typing.Iterable[str], order_by: list[str] | None = None)
         venues = venues.order_by(models.Venue.id)
 
     return venues
+
+
+def get_venue_base_query(venue_id: int) -> BaseQuery:
+    return models.Venue.query.outerjoin(offerers_models.VenueContact).filter(models.Venue.id == venue_id)
 
 
 def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
