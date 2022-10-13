@@ -1,4 +1,5 @@
 import typing
+import enum
 
 import pydantic
 
@@ -44,3 +45,13 @@ class SearchUserModel(BaseModel):
     @pydantic.root_validator(pre=True)
     def filter_empty_fields(cls, values: dict) -> dict:
         return {k: v for k, v in values.items() if v}
+
+
+class TypeOptions(enum.Enum):
+    USER = "user"
+    OFFERER = "offerer"
+    VENUE = "venue"
+
+
+class SearchProModel(SearchUserModel):
+    type: TypeOptions

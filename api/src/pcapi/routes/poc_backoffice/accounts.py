@@ -15,7 +15,7 @@ from pcapi.models.feature import FeatureToggle
 from . import blueprint
 from . import search_utils
 from . import utils
-from .serialization import shared
+from .serialization import search
 
 
 @blueprint.poc_backoffice_web.route("/public_accounts/search", methods=["GET"])
@@ -27,11 +27,11 @@ def search_public_accounts():  # type: ignore
             "search.html",
             title="Recherche grand public",
             dst=url_for(".search_public_accounts"),
-            order_by_options=shared.OrderByCols,
+            order_by_options=search.OrderByCols,
         )
 
     try:
-        search_model = shared.SearchUserModel(**request.args)
+        search_model = search.SearchUserModel(**request.args)
     except pydantic.ValidationError:
         return redirect(url_for(".invalid_search"))
 
@@ -68,5 +68,5 @@ def get_public_account(user_id: int):  # type: ignore
     return render_template("public_account.html", user=user)
 
 
-def fetch_rows(search_model: shared.SearchUserModel) -> Pagination:
+def fetch_rows(search_model: search.SearchUserModel) -> Pagination:
     return search_utils.fetch_paginated_rows(users_api.search_public_account, search_model)

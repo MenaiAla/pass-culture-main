@@ -16,7 +16,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 import pcapi.core.users.api as users_api
 from pcapi.core.users.backoffice import api as backoffice_api
-from pcapi.flask_app import app
 from pcapi.flask_app import oauth
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle

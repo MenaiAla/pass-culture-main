@@ -15,7 +15,7 @@ from pcapi.models.feature import FeatureToggle
 from . import blueprint
 from . import search_utils
 from . import utils
-from .serialization import pro
+from .serialization import search
 
 
 class Context:
@@ -51,11 +51,11 @@ def search_pro():  # type: ignore
             "search_pro.html",
             title="Recherche pro",
             dst=url_for(".search_pro"),
-            type_options=[opt.value for opt in pro.TypeOptions],
+            type_options=[opt.value for opt in search.TypeOptions],
         )
 
     try:
-        search_model = pro.SearchProUserModel(**request.args)
+        search_model = search.SearchProModel(**request.args)
     except pydantic.ValidationError:
         return redirect(url_for(".invalid_search"))
 
@@ -85,9 +85,9 @@ def search_pro():  # type: ignore
     )
 
 
-def get_context(search_model: pro.SearchProUserModel) -> typing.Type[Context]:
+def get_context(search_model: search.SearchProModel) -> typing.Type[Context]:
     return {
-        pro.TypeOptions.USER: UserContext,
-        pro.TypeOptions.OFFERER: OffererContext,
-        pro.TypeOptions.VENUE: VenueContext,
+        search.TypeOptions.USER: UserContext,
+        search.TypeOptions.OFFERER: OffererContext,
+        search.TypeOptions.VENUE: VenueContext,
     }[search_model.type]

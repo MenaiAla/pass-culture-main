@@ -31,11 +31,11 @@ class LoginPageTest:
         assert "google.com" in response.location
 
     @override_features(ENABLE_NEW_BACKOFFICE_POC=False)
-    def test_redirects_to_unauthorized_if_ff_disabled(self, client):  # type: ignore
+    def test_redirects_to_not_enabled_if_ff_disabled(self, client):  # type: ignore
         response = client.get(url_for("poc_backoffice_web.login"))
 
         assert response.status_code == 302
-        assert response.location == url_for("poc_backoffice_web.unauthorized", _external=True)
+        assert response.location == url_for("poc_backoffice_web.not_enabled", _external=True)
 
 
 class UnauthorizedPageTest:
