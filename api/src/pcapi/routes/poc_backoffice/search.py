@@ -15,4 +15,4 @@ def invalid_search():  # type: ignore
 @blueprint.poc_backoffice_web.route("/not-found", methods=["GET"])
 @utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC, redirect_to=".not_enabled")
 def not_found():  # type: ignore
-    return render_template("not_found.html")
+    return render_template("search/not_found.html")

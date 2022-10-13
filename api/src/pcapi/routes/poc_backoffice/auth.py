@@ -26,12 +26,12 @@ from . import utils
 
 @blueprint.poc_backoffice_web.route("/unauthorized", methods=["GET"])
 def unauthorized():  # type: ignore
-    return render_template("unauthorized.html")
+    return render_template("auth/unauthorized.html")
 
 
 @blueprint.poc_backoffice_web.route("/not_enabled", methods=["GET"])
 def not_enabled():  # type: ignore
-    return render_template("not_enabled.html")
+    return render_template("auth/not_enabled.html")
 
 
 @blueprint.poc_backoffice_web.route("/login", methods=["GET"])
@@ -107,7 +107,7 @@ def logout():  # type: ignore
 
 @blueprint.poc_backoffice_web.route("/user-not-found", methods=["GET"])
 def user_not_found():  # type: ignore
-    return render_template("user_not_found.html")
+    return render_template("auth/user_not_found.html")
 
 
 def fetch_user_permissions_from_google_workspace(user: users_models.User) -> list[perm_models.Permission]:

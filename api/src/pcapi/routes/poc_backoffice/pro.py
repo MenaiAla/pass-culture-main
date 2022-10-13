@@ -72,7 +72,7 @@ class VenueContext(Context):
 def search_pro():  # type: ignore
     if not request.args:
         return render_template(
-            "search_pro.html",
+            "pro/search.html",
             title="Recherche pro",
             dst=url_for(".search_pro"),
             type_options=[opt.value for opt in search.TypeOptions],
@@ -97,7 +97,7 @@ def search_pro():  # type: ignore
     next_pages_urls = search_utils.pagination_links(next_page, 1, paginated_rows.pages)
 
     return render_template(
-        "search_result.html",
+        "search/result.html",
         columns_header=context.template_columns_header,
         columns=context.template_columns,
         next_pages_urls=next_pages_urls,

@@ -24,7 +24,7 @@ from .serialization import search
 def search_public_accounts():  # type: ignore
     if not request.args:
         return render_template(
-            "search.html",
+            "accounts/search.html",
             title="Recherche grand public",
             dst=url_for(".search_public_accounts"),
             order_by_options=search.OrderByCols,
@@ -48,7 +48,7 @@ def search_public_accounts():  # type: ignore
     next_pages_urls = search_utils.pagination_links(next_page, 1, paginated_rows.pages)
 
     return render_template(
-        "search_result.html",
+        "search/result.html",
         columns_header=["id", "prénom", "nom", "email"],
         columns=["id", "firstName", "lastName", "email"],
         next_pages_urls=next_pages_urls,
@@ -66,7 +66,7 @@ def search_public_accounts():  # type: ignore
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT, redirect_to=".unauthorized")
 def get_public_account(user_id: int):  # type: ignore
     user = users_models.User.query.get_or_404(user_id)
-    return render_template("public_account.html", user=user)
+    return render_template("accounts/public_account.html", user=user)
 
 
 def fetch_rows(search_model: search.SearchUserModel) -> Pagination:

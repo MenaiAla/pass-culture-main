@@ -1,8 +1,10 @@
 {% extends "layouts/connected.html" %}
 
-{% block page %}
-    <h2>{{ title }}</h2>
+{% block pageTitle %}
+    Rechercher des comptes
+{% endblock %}
 
+{% block page %}
     <form action={{ dst }} method="GET">
         <input type="text" id="search_terms" name="terms" />
 

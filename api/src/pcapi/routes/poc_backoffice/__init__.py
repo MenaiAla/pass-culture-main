@@ -7,4 +7,4 @@ def install_routes(app: Flask) -> None:
     from . import auth
     from . import home
     from . import pro
-    from . import shared
+    from . import search

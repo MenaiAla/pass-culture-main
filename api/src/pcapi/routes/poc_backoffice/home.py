@@ -10,4 +10,4 @@ from . import blueprint
 def home():  # type: ignore
     if current_user and not current_user.is_anonymous:
         return werkzeug.utils.redirect(url_for("poc_backoffice_web.search_public_accounts"))
-    return render_template("login.html")
+    return render_template("home/login.html")
