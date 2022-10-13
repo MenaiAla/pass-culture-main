@@ -1,5 +1,24 @@
 {% extends "layouts/base.html" %}
 
+{% set menu = [
+    {"label": "Recherche", "url": url_for("poc_backoffice_web.search_public_accounts")}
+] %}
+
+{% macro subMenuHeader(name) %}
+    <hr class="mdc-deprecated-list-divider">
+    <h6 class="mdc-deprecated-list-group__subheader">{{ name }}</h6>
+{% endmacro %}
+
+{% macro menuItem(label, url) %}
+    <a
+        href={{ url }}
+        class="mdc-deprecated-list-item {{ "mdc-deprecated-list-item--activated" if url == request.path else "" }}"
+    >
+        <span class="mdc-deprecated-list-item__ripple"></span>
+        <span class="mdc-deprecated-list-item__text">{{ label }}</span>
+    </a>
+{% endmacro %}
+
 {% block content %}
     <aside class="mdc-drawer">
         <div class="mdc-drawer__header">
@@ -9,21 +28,12 @@
         <div class="mdc-drawer__content">
             <nav class="mdc-deprecated-list">
 
-                <hr class="mdc-deprecated-list-divider">
-                <h6 class="mdc-deprecated-list-group__subheader">Jeunes et grand public</h6>
+                {{ subMenuHeader("Jeunes et grand public") }}
+                {{ menuItem("Recherche", url_for("poc_backoffice_web.search_public_accounts")) }}
 
-                <a href={{ url_for("poc_backoffice_web.search_public_accounts") }} class="mdc-deprecated-list-item mdc-deprecated-list-item--activated" href="#" aria-current="page">
-                    <span class="mdc-deprecated-list-item__ripple"></span>
-                    <span class="mdc-deprecated-list-item__text">Recherche</span>
-                </a>
+                {{ subMenuHeader("Acteurs Culturels") }}
+                {{ menuItem("Recherche", url_for("poc_backoffice_web.search_pro")) }}
 
-                <hr class="mdc-deprecated-list-divider">
-                <h6 class="mdc-deprecated-list-group__subheader">Acteurs Culturels</h6>
-
-                <a href={{ url_for("poc_backoffice_web.search_pro") }} class="mdc-deprecated-list-item" href="#">
-                    <span class="mdc-deprecated-list-item__ripple"></span>
-                    <span class="mdc-deprecated-list-item__text">Recherche</span>
-                </a>
             </nav>
         </div>
     </aside>
