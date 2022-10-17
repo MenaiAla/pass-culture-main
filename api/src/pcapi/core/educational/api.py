@@ -5,6 +5,7 @@ import logging
 from operator import or_
 import typing
 
+from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from pydantic import parse_obj_as
 from pydantic.error_wrappers import ValidationError
@@ -815,7 +816,6 @@ def get_collective_offer_template_by_id(offer_id: int) -> educational_models.Col
 def create_collective_offer_template_from_collective_offer(
     price_detail: str | None, user: User, offer_id: int
 ) -> educational_models.CollectiveOfferTemplate:
-    from pcapi.core.offers.api import update_offer_fraud_information
 
     offer = educational_repository.get_collective_offer_by_id(offer_id)
     if offer.collectiveStock is not None:
@@ -827,9 +827,6 @@ def create_collective_offer_template_from_collective_offer(
     db.session.delete(offer)
     db.session.add(collective_offer_template)
     db.session.commit()
-
-    if offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
-        update_offer_fraud_information(collective_offer_template, user)
 
     search.unindex_collective_offer_ids([offer.id])
     search.async_index_collective_offer_template_ids([collective_offer_template.id])
@@ -924,9 +921,8 @@ def get_educational_institution_by_id(institution_id: int) -> educational_models
 
 
 def update_collective_offer_educational_institution(
-    offer_id: int, educational_institution_id: int | None, is_creating_offer: bool, user: User
+    offer_id: int, educational_institution_id: int | None, user: User
 ) -> educational_models.CollectiveOffer:
-    from pcapi.core.offers.api import update_offer_fraud_information
 
     offer = educational_repository.get_collective_offer_by_id(offer_id)
     if educational_institution_id is not None:
@@ -934,13 +930,10 @@ def update_collective_offer_educational_institution(
     else:
         institution = None
 
-    if not is_creating_offer and offer.collectiveStock and not offer.collectiveStock.isEditable:
+    if offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
     offer.institution = institution  # type: ignore [assignment]
     db.session.commit()
-
-    if is_creating_offer and offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
-        update_offer_fraud_information(offer, user)
 
     search.async_index_collective_offer_ids([offer_id])
 
@@ -1265,3 +1258,27 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
             "Could not notify offerer about collective booking cancellation",
             extra={"collectiveStock": collective_stock.id},
         )
+
+
+def publish_collective_offer(offer_id: int) -> None:
+    """
+    We pass the fraud before the offer so we can verify if the offer is a fraud,
+    if no then no problem, if yes then the fraud service will work to delete or authorize the offer.
+    """
+    from pcapi.core.offers.api import update_offer_fraud_information
+
+    offer = educational_models.CollectiveOffer.query.filter_by(id=offer_id).one()
+    user = current_user
+    update_offer_fraud_information(offer=offer, user=user)
+
+
+def publish_collective_offer_template(offer_id: int) -> None:
+    """
+    We pass the fraud before the offerTemplate so we can verify if the offer is a fraud,
+    if no then no problem, if yes then the fraud service will work to delete or authorize the Template.
+    """
+    from pcapi.core.offers.api import update_offer_fraud_information
+
+    offer = educational_models.CollectiveOfferTemplate.query.filter_by(id=offer_id).one()
+    user = current_user
+    update_offer_fraud_information(offer=offer, user=user)

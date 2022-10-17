@@ -385,7 +385,6 @@ def patch_collective_offers_educational_institution(
         offer = educational_api.update_collective_offer_educational_institution(
             offer_id=dehumanized_id,
             educational_institution_id=body.educational_institution_id,
-            is_creating_offer=body.is_creating_offer,
             user=current_user,
         )
     except educational_exceptions.EducationalInstitutionNotFound:
@@ -395,3 +394,39 @@ def patch_collective_offers_educational_institution(
         raise ApiErrors({"offer": ["L'offre n'est plus modifiable"]}, status_code=403)
 
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers/<string:offer_id>/publish", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def publish_collective_offer(offer_id: str) -> None:
+    dehumanized_offer_id = dehumanize_or_raise(offer_id)
+    try:
+        offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offerer.id)
+
+    educational_api.publish_collective_offer(dehumanized_offer_id)
+
+
+@private_api.route("/collective/offers-template/<string:offer_id>/publish", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def publish_collective_offer_template(offer_id: str) -> None:
+    dehumanized_offer_id = dehumanize_or_raise(offer_id)
+    try:
+        offerer = offerers_api.get_offerer_by_collective_offer_template_id(dehumanized_offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offerer.id)
+
+    educational_api.publish_collective_offer_template(dehumanized_offer_id)
