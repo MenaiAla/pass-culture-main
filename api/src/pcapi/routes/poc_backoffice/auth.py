@@ -35,7 +35,7 @@ def not_enabled():  # type: ignore
 
 
 @blueprint.poc_backoffice_web.route("/login", methods=["GET"])
-@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC, redirect_to=".not_enabled")
+@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC)
 def login():  # type: ignore
     is_testing_or_dev_without_google_credentials = (settings.IS_TESTING or settings.IS_DEV) and (
         not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
@@ -62,7 +62,7 @@ def login():  # type: ignore
 
 
 @blueprint.poc_backoffice_web.route("/authorize", methods=["GET"])
-@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC, redirect_to=".unauthorized")
+@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC)
 def authorize():  # type: ignore
     from pcapi.utils import login_manager
 

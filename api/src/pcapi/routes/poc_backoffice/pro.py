@@ -67,7 +67,7 @@ class VenueContext(Context):
 
 
 @blueprint.poc_backoffice_web.route("/pro/search", methods=["GET"])
-@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC, redirect_to=".unauthorized")
+@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC)
 @utils.permission_required(perm_models.Permissions.SEARCH_PRO_ACCOUNT, redirect_to=".unauthorized")
 def search_pro():  # type: ignore
     if not request.args:
@@ -111,7 +111,7 @@ def search_pro():  # type: ignore
 
 
 @blueprint.poc_backoffice_web.route("/pro/<string:pro_type>/<int:row_id>", methods=["GET"])
-@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC, redirect_to=".unauthorized")
+@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC)
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT, redirect_to=".unauthorized")
 def get_pro(pro_type: str, row_id: int):  # type: ignore
     try:

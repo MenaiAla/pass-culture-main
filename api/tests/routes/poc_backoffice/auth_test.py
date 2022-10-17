@@ -119,7 +119,7 @@ class AuthorizePageTest:
         response = client.get(url_for("poc_backoffice_web.authorize"))
 
         assert response.status_code == 302
-        assert response.location == url_for("poc_backoffice_web.unauthorized", _external=True)
+        assert response.location == url_for("poc_backoffice_web.not_enabled", _external=True)
 
 
 class LogoutPageTest:

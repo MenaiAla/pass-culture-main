@@ -1,0 +1,25 @@
+<div class="mdc-card">
+    <div class="mdc-card__primary-action p-2">
+        {% include "components/search/result_chip.html" %}
+
+        <p>{{ row.firstName }} {{ row.lastName }}</p>
+        <p>User ID : {{ row.id }} </p>
+        <p>mail: {{ row.email }} </p>
+        <p>tel: {{ row | format_user_phone_number }} </p>
+        <!-- ... additional primary action content ... -->
+        <div class="mdc-card__ripple"></div>
+    </div>
+
+    <div class="mdc-card__actions">
+        <div class="mdc-card__action-buttons">
+            <a href={{ get_link_to_detail(row.id) }}>
+                <button class="mdc-button mdc-card__action mdc-card__action--button">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">
+                        Consulter ce profil
+                    </span>
+                </button>
+            </a>
+        </div>
+    </div>
+</div>

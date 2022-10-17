@@ -19,7 +19,7 @@ from .serialization import search
 
 
 @blueprint.poc_backoffice_web.route("/public_accounts/search", methods=["GET"])
-@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC, redirect_to=".unauthorized")
+@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC)
 @utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT, redirect_to=".unauthorized")
 def search_public_accounts():  # type: ignore
     if not request.args:
@@ -47,10 +47,13 @@ def search_public_accounts():  # type: ignore
     paginated_rows = fetch_rows(search_model)
     next_pages_urls = search_utils.pagination_links(next_page, 1, paginated_rows.pages)
 
+    column_headers = ["id", "prénom", "nom", "status", "pass", "email", "téléphone"]
+    columns = ["id", "firstName", "lastName", "isActive", "roles", "email", "phoneNumber"]
+
     return render_template(
         "search/result.html",
-        columns_header=["id", "prénom", "nom", "email"],
-        columns=["id", "firstName", "lastName", "email"],
+        columns_header=column_headers,
+        columns=columns,
         next_pages_urls=next_pages_urls,
         new_search_url=url_for(".search_public_accounts"),
         get_link_to_detail=get_public_account_link,
@@ -62,7 +65,7 @@ def search_public_accounts():  # type: ignore
 
 
 @blueprint.poc_backoffice_web.route("/public_accounts/<int:user_id>", methods=["GET"])
-@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC, redirect_to=".unauthorized")
+@utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC)
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT, redirect_to=".unauthorized")
 def get_public_account(user_id: int):  # type: ignore
     user = users_models.User.query.get_or_404(user_id)

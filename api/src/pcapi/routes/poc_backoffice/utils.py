@@ -10,25 +10,18 @@ import werkzeug
 
 from pcapi import settings
 from pcapi.core.permissions import models as perm_models
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 
 
 logger = logging.getLogger(__name__)
 
 
-def ff_enabled(feature: FeatureToggle, redirect_to: str | None) -> typing.Callable:
+def ff_enabled(feature: FeatureToggle) -> typing.Callable:
     def wrapper(func: typing.Callable) -> typing.Callable:
         @wraps(func)
         def wrapped(*args, **kwargs) -> tuple[Response, int] | typing.Callable:  # type: ignore[no-untyped-def]
             if not feature.is_active():
-                if redirect_to:
-                    return werkzeug.utils.redirect(url_for(redirect_to))
-
-                raise ApiErrors(
-                    {"global": f"This function is behind the deactivated {feature.name} feature flag"},
-                    status_code=403,
-                )
+                return werkzeug.utils.redirect(url_for(".not_enabled"))
 
             return func(*args, **kwargs)
 

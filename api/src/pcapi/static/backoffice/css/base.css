@@ -2,7 +2,6 @@ body {
     margin: 0;
 }
 
-
 body {
     display: flex;
     height: 100vh;
@@ -40,6 +39,10 @@ body {
 
 .drawer-top-app-bar {
     position: absolute;
+}
+
+.p-2 {
+    padding: 1.2rem;
 }
 
 :root {

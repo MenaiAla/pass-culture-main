@@ -5,37 +5,19 @@
 {% endblock %}
 
 {% block page %}
-<h1>Backoffice pass Culture</h1>
+<h1>Jeunes bénéficiaires ou à venir</h1>
 
-<h2>Search Result</h2>
+<h3>{{ rows.total }} résultats</h3>
 
-<h3>{{ rows.total }} row(s) found</h3>
-
-<table>
-    <thead>
-        <tr>
-            {% for col in columns_header %}
-            <th>{{ col }}</th>
-            {% endfor %}
-            <th>lien</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for row in rows.items %}
-        <tr>
-            {% for col in columns %}
-            <td>{{ row[col] }}</td>
-            {% endfor %}
-            <td>
-                <a href={{ url_for("poc_backoffice_web.get_public_account", user_id=row.id) }}>
-                    lien
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="mdc-layout-grid">
+  <div class="mdc-layout-grid__inner">
+    {% for row in rows.items %}
+        <div class="mdc-layout-grid__cell--span-4">
+            {% include 'components/search/result_card.html' %}
+        </div>
+    {% endfor %}
+  </div>
+</div>
 
 <h3>Pagination</h3>
 <ul>
@@ -51,6 +33,4 @@
     </li>
     {% endfor %}
 </ul>
-
-<a href={{ new_search_url }}>Nouvelle recherche</a>
 {% endblock %}
