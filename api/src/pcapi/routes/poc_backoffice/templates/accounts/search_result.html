@@ -1,0 +1,21 @@
+{% extends "search/result.html" %}
+
+{% block search_result_form %}
+    <form action={{ dst }} method="GET">
+        <label class="mdc-text-field mdc-text-field--filled username">
+            <span class="mdc-text-field__ripple"></span>
+            <input type="text" id="search-terms" class="mdc-text-field__input" aria-labelledby="username-label" name="terms" required>
+
+            <span class="mdc-floating-label" id="terme-label">Username</span>
+            <span class="mdc-line-ripple"></span>
+        </label>
+
+        <div class="mdc-touch-target-wrapper">
+            <button type="submit" class="mdc-button mdc-button--raised">
+                <span class="mdc-button__ripple"></span>
+                <span class="mdc-button__touch"></span>
+                <span class="mdc-button__label">Chercher</span>
+            </button>
+        </div>
+    </form>
+{% endblock %}

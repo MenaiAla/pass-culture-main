@@ -1,27 +1,47 @@
 {% extends "layouts/connected.html" %}
 
-{% block pageTitle %}
-    Rechercher des comptes
-{% endblock %}
-
 {% block page %}
-    <form action={{ dst }} method="GET">
-        <input type="text" id="search_terms" name="terms" />
+    <div class="pc-search">
+        <h1>Jeunes bénéficiaires ou à venir</h1>
 
-        {% if order_by_options %}
-            <label for="order_by">Sort by column</label>
-            <select id="search_order_by" name="order_by">
-                {% for field in order_by_options %}
-                    <option value={{ field }}>{{ field }}</option>
-                {% endfor %}
-            </select>
-        {% endif %}
+        <form action={{ dst }} method="GET">
+            <label class="mdc-text-field mdc-text-field--filled username">
+                <span class="mdc-text-field__ripple"></span>
+                <input type="text" id="search-terms" class="mdc-text-field__input" aria-labelledby="username-label" name="terms" required>
 
-        {% block extra_search_fields %}
-        {% endblock %}
+                <span class="mdc-floating-label" id="terme-label">Username</span>
+                <span class="mdc-line-ripple"></span>
+            </label>
 
-        <br />
+            <div class="mdc-touch-target-wrapper">
+                <button type="submit" class="mdc-button mdc-button--raised">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="mdc-button__touch"></span>
+                    <span class="mdc-button__label">Chercher</span>
+                </button>
+            </div>
+        </form>
 
-        <button type="submit">Search</button>
-    </form>
+        {# <form action={{ dst }} method="GET"> #}
+        {#     <input type="text" id="search_terms" name="terms" /> #}
+        {#  #}
+        {#     {% if order_by_options %} #}
+        {#         <label for="order_by">Sort by column</label> #}
+        {#         <select id="search_order_by" name="order_by"> #}
+        {#             {% for field in order_by_options %} #}
+        {#                 <option value={{ field }}>{{ field }}</option> #}
+        {#             {% endfor %} #}
+        {#         </select> #}
+        {#     {% endif %} #}
+        {#  #}
+        {#     {% block extra_search_fields %} #}
+        {#     {% endblock %} #}
+        {#  #}
+        {#     <br /> #}
+        {#  #}
+        {#     <button type="submit">Search</button> #}
+        {# </form> #}
+
+    </div>
 {% endblock %}
+

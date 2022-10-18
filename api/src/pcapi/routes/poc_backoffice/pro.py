@@ -94,7 +94,7 @@ def search_pro():  # type: ignore
 
     context = get_context(search_model.type)
     paginated_rows = search_utils.fetch_paginated_rows(context.fetch_rows_func, search_model)
-    next_pages_urls = search_utils.pagination_links(next_page, 1, paginated_rows.pages)
+    next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
 
     return render_template(
         "search/result.html",
