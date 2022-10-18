@@ -8,7 +8,6 @@ import Spinner from 'components/layout/Spinner'
 import { Events } from 'core/FirebaseEvents/constants'
 import InfoDialog from 'new_components/InfoDialog'
 import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
-import { Title } from 'ui-kit'
 
 import ApplicationBanner from '../ApplicationBanner'
 
@@ -97,9 +96,9 @@ const ReimbursementPoint = ({
   return (
     <div className="section reimbursement-point-section">
       <div className="main-list-title">
-        <Title as="h2" level={4} className={styles['sub-title-text']}>
+        <h2 className={styles['sub-title-text']}>
           Coordonnées bancaires
-        </Title>
+        </h2>
       </div>
       {hasPendingBankInformationApplication ? (
         <ApplicationBanner
