@@ -125,7 +125,7 @@ def get_pro(pro_type: str, row_id: int):  # type: ignore
     if not row:
         return redirect(url_for(".not_found"))
 
-    return render_template("pro.html", row=row, pro_type=pro_type)
+    return render_template("pro/get.html", row=row, pro_type=pro_type)
 
 
 def get_context(pro_type: search.TypeOptions) -> typing.Type[Context]:

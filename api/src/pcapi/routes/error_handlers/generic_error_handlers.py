@@ -36,7 +36,7 @@ ApiErrorResponse = tuple[dict | Response, int]
 def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse | HtmlErrorResponse:
     match request.blueprint:
         case poc_backoffice_web.name:
-            return render_template("not_found.html"), 404
+            return render_template("errors/not_found.html"), 404
         case _:
             return {}, 404
 
