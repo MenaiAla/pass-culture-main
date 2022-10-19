@@ -1,5 +1,8 @@
 {% extends "search/result.html" %}
 
+{% from "layouts/connected.html" import MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR %}
+{% set CURRENT_PATH = MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR %}
+
 {% block search_result_form %}
     <form action={{ dst }} method="GET">
         <label class="mdc-text-field mdc-text-field--filled username">

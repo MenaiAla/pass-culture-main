@@ -1,5 +1,8 @@
 {% extends "layouts/connected.html" %}
 
+{% from "layouts/connected.html" import MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR %}
+{% set CURRENT_PATH = MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR %}
+
 {% block page %}
     <h2>Public account</h2>
     <p>{{ user.email }}</p>

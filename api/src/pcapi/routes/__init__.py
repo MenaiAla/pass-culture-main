@@ -1,5 +1,7 @@
 from flask import Flask
 
+from pcapi.flask_app import csrf
+
 
 def install_all_routes(app: Flask) -> None:
     from pcapi.admin.install import install_admin
@@ -13,13 +15,13 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.backoffice.blueprint import backoffice_blueprint
     from pcapi.routes.native.v1.blueprint import native_v1 as native_v1_blueprint
     from pcapi.routes.poc_backoffice.blueprint import poc_backoffice_web
+
     from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
     from pcapi.routes.pro.blueprint import pro_public_api_v1 as pro_public_api_v1_blueprint
     from pcapi.routes.pro.blueprint import pro_public_api_v2 as pro_public_api_v2_blueprint
     from pcapi.routes.saml.blueprint import saml_blueprint as saml_blueprint_blueprint
     import pcapi.tasks
     from pcapi.tasks.decorator import cloud_task_api
-
     from . import adage
     from . import adage_iframe
     from . import backoffice
@@ -28,11 +30,11 @@ def install_all_routes(app: Flask) -> None:
     from . import internal
     from . import native
     from . import poc_backoffice
+
     from . import pro
     from . import saml
     from . import shared
     from .pro import public_api as pro_public_api
-
     install_admin(app, db.session)
     install_admin_autocomplete_views()
     adage.install_routes(app)
@@ -61,3 +63,18 @@ def install_all_routes(app: Flask) -> None:
     app.register_blueprint(public_api)
     app.register_blueprint(backoffice_blueprint, url_prefix="/backoffice")
     app.register_blueprint(poc_backoffice_web, url_prefix="/pocbo")
+
+    # Only poc_backoffice_web blueprint needs CSRF protection.
+    # It seems the only way is to exempt blueprints instead of
+    # enabling this protection for one blueprint only
+    csrf.exempt(adage_v1_blueprint)
+    csrf.exempt(native_v1_blueprint)
+    csrf.exempt(pro_public_api_v1_blueprint)
+    csrf.exempt(pro_public_api_v2_blueprint)
+    csrf.exempt(pro_private_api_blueprint)
+    csrf.exempt(adage_iframe_blueprint)
+    csrf.exempt(saml_blueprint_blueprint)
+    csrf.exempt(cloud_task_api)
+    csrf.exempt(private_api)
+    csrf.exempt(public_api)
+    csrf.exempt(backoffice_blueprint)

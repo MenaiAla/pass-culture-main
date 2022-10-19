@@ -1,9 +1,5 @@
 {% extends "layouts/base.html" %}
 
-{% set menu = [
-    {"label": "Recherche", "url": url_for("poc_backoffice_web.search_public_accounts")}
-] %}
-
 {% macro subMenuHeader(name) %}
     <hr class="mdc-deprecated-list-divider">
     <h6 class="mdc-deprecated-list-group__subheader">{{ name }}</h6>
@@ -19,43 +15,127 @@
     </a>
 {% endmacro %}
 
+{% set MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR=".search_public_accounts" %}
+{% set MENU_JGP_GRAND_PUBLIC=".home" %}
+{% set MENU_JGP_FF=".home" %}
+{% set MENU_JGP_CATEGORIES=".home" %}
+
+{% set MENU_AC_LISTE_ACTEURS_CULTURELS=".search_pro" %}
+{% set MENU_AC_FF=".home" %}
+{% set MENU_AC_CATEGORIES=".home" %}
+{% set MENU_AC_RECHERCHER_OFFRES=".home" %}
+
+{% macro menu_section(title) %}
+    <p class="m-3 lead">{{ title }}</p>
+
+    <nav class="nav nav-pills flex-column">
+        {{ caller() }}
+    </nav>
+{% endmacro %}
+
+{% macro menu_section_item(title, path) %}
+    {% set url = url_for(path) %}
+    {% set is_active = "bg-light" if CURRENT_PATH == path else "" %}
+
+    <a class="nav-link ps-5 g-0 {{ is_active }} rounded-0 text-reset" href={{ url }}>
+        {{ title }}
+    </a>
+{% endmacro %}
+
 {% block content %}
-    <aside class="mdc-drawer">
-        <div class="mdc-drawer__header">
-            <h3 class="mdc-drawer__title">Backoffice</h3>
-            <h6 class="mdc-drawer__subtitle">{{ current_user.email }}</h6>
-        </div>
-        <div class="mdc-drawer__content">
-            <nav class="mdc-deprecated-list">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3 bg-white g-0 shadow border-end border-1">
+                <div class="d-flex flex-column align-items-center text-black min-vh-100">
+                    <a href="/" class="w-100 py-3 text-black text-decoration-none text-center border-bottom">
+                        <span class="fs-5">Menu</span>
+                    </a>
 
-                {{ subMenuHeader("Jeunes et grand public") }}
-                {{ menuItem("Recherche", url_for("poc_backoffice_web.search_public_accounts")) }}
+                    <nav id="navbar-example3" class="h-100 w-100 flex-column align-items-stretch py-2">
+                        <nav class="nav nav-pills flex-column">
 
-                {{ subMenuHeader("Acteurs Culturels") }}
-                {{ menuItem("Recherche", url_for("poc_backoffice_web.search_pro")) }}
+                            {% call menu_section("Jeunes et grand public") %}
+                                {{ menu_section_item("Jeune bénéficiaires ou à venir", MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR) }}
+                                {{ menu_section_item("Utilisateurs grand public", MENU_JGP_GRAND_PUBLIC) }}
+                                {{ menu_section_item("Feature flipping", MENU_JGP_FF) }}
+                                {{ menu_section_item("Catégories et sous-catégories", MENU_JGP_CATEGORIES) }}
+                            {% endcall %}
 
-            </nav>
-        </div>
-    </aside>
-    <div class="drawer-frame-app-content">
-        <header class="mdc-top-app-bar drawer-top-app-bar">
-            <div class="mdc-top-app-bar__row">
-                <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-                    <span class="mdc-top-app-bar__title">
-                        {% block pageTitle %}{% endblock %}
-                    </span>
-                </section>
-                <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-                    <form action={{ url_for("poc_backoffice_web.logout") }} method="post">
-                        <button type="submit" value="logout" class="mdc-icon-button material-icons mdc-top-app-bar__action-item--unbounded" aria-label="logout">logout</button>
-                    </form>
-                </section>
+                        </nav>
+
+                        <hr>
+
+                        <nav class="nav nav-pills flex-column">
+
+                            {% call menu_section("Acteurs culturels") %}
+                                {{ menu_section_item("Liste des acteurs culturels", MENU_AC_LISTE_ACTEURS_CULTURELS) }}
+                                {{ menu_section_item("Feature flipping", MENU_AC_FF) }}
+                                {{ menu_section_item("Catégories et sous-catégories d'offres", MENU_AC_CATEGORIES) }}
+                                {{ menu_section_item("Rechercher des offres", MENU_AC_RECHERCHER_OFFRES) }}
+                            {% endcall %}
+
+                        </nav>
+
+                        <hr>
+                    </nav>
+                </div>
             </div>
-        </header>
-        <div class="drawer-main-content">
-            <div class="mdc-top-app-bar--fixed-adjust"></div>
-            {% block page %}{% endblock %}
+
+            <div class="col g-0">
+                <div class="navbar text-bg-primary p-3" id="pc-header-top">
+                    <p class="my-0 ms-5 lead">
+                        Backoffice
+                    </p>
+
+                    <i class="bi bi-box-arrow-right fs-5 me-2"></i>
+                </div>
+
+                {% block page %}
+                {% endblock %}
+            </div>
+
         </div>
     </div>
+
+
+
+
+    {# <aside class="mdc-drawer"> #}
+    {#     <div class="mdc-drawer__header"> #}
+    {#         <h3 class="mdc-drawer__title">Backoffice</h3> #}
+    {#         <h6 class="mdc-drawer__subtitle">{{ current_user.email }}</h6> #}
+    {#     </div> #}
+    {#     <div class="mdc-drawer__content"> #}
+    {#         <nav class="mdc-deprecated-list"> #}
+    {#  #}
+    {#             {{ subMenuHeader("Jeunes et grand public") }} #}
+    {#             {{ menuItem("Recherche", url_for("poc_backoffice_web.search_public_accounts")) }} #}
+    {#  #}
+    {#             {{ subMenuHeader("Acteurs Culturels") }} #}
+    {#             {{ menuItem("Recherche", url_for("poc_backoffice_web.search_pro")) }} #}
+    {#  #}
+    {#         </nav> #}
+    {#     </div> #}
+    {# </aside> #}
+    {# <div class="drawer-frame-app-content"> #}
+    {#     <header class="mdc-top-app-bar drawer-top-app-bar"> #}
+    {#         <div class="mdc-top-app-bar__row"> #}
+    {#             <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"> #}
+    {#                 <span class="mdc-top-app-bar__title"> #}
+    {#                     {% block pageTitle %}{% endblock %} #}
+    {#                 </span> #}
+    {#             </section> #}
+    {#             <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end"> #}
+    {#                 <form action={{ url_for("poc_backoffice_web.logout") }} method="post"> #}
+    {#                     <button type="submit" value="logout" class="mdc-icon-button material-icons mdc-top-app-bar__action-item--unbounded" aria-label="logout">logout</button> #}
+    {#                 </form> #}
+    {#             </section> #}
+    {#         </div> #}
+    {#     </header> #}
+    {#     <div class="drawer-main-content"> #}
+    {#         <div class="mdc-top-app-bar--fixed-adjust"></div> #}
+    {#         {% block page %}{% endblock %} #}
+    {#     </div> #}
+    {# </div> #}
 
 {% endblock %}

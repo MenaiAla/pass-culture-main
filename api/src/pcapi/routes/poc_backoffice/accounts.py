@@ -15,6 +15,7 @@ from pcapi.models.feature import FeatureToggle
 from . import blueprint
 from . import search_utils
 from . import utils
+from .forms import search as search_forms
 from .serialization import search
 
 
@@ -28,24 +29,35 @@ def search_public_accounts():  # type: ignore
             title="Recherche grand public",
             dst=url_for(".search_public_accounts"),
             order_by_options=search.OrderByCols,
+            form=search_forms.SearchForm(),
         )
 
-    try:
-        search_model = search.SearchUserModel(**request.args)
-    except pydantic.ValidationError:
-        return redirect(url_for(".invalid_search"))
+    #  try:
+    #      search_model = search.SearchUserModel(**request.args)
+    #  except pydantic.ValidationError:
+    #      return redirect(url_for(".invalid_search"))
+
+    form = search_forms.SearchForm(request.args)
+    if not form.validate():
+        return render_template(
+            "accounts/search.html",
+            title="Recherche grand public",
+            dst=url_for(".search_public_accounts"),
+            order_by_options=search.OrderByCols,
+            form=form,
+        )
 
     next_page = partial(
         url_for,
         ".search_public_accounts",
-        terms=search_model.terms,
-        order_by=search_model.order_by,
-        page=search_model.page,
-        per_page=search_model.per_page,
+        terms=form.terms.data,
+        order_by=form.order_by.data,
+        page=form.page.data,
+        per_page=form.per_page.data,
     )
 
-    paginated_rows = fetch_rows(search_model)
-    next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
+    paginated_rows = fetch_rows(form)
+    next_pages_urls = search_utils.pagination_links(next_page, form.page.data, paginated_rows.pages)
 
     column_headers = ["id", "prénom", "nom", "status", "pass", "email", "téléphone"]
     columns = ["id", "firstName", "lastName", "isActive", "roles", "email", "phoneNumber"]
@@ -58,9 +70,9 @@ def search_public_accounts():  # type: ignore
         new_search_url=url_for(".search_public_accounts"),
         get_link_to_detail=get_public_account_link,
         rows=paginated_rows,
-        terms=search_model.terms,
-        order_by=search_model.order_by,
-        per_page=search_model.per_page,
+        terms=form.terms.data,
+        order_by=form.order_by.data,
+        per_page=form.per_page.data,
     )
 
 

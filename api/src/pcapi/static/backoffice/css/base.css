@@ -1,87 +1,91 @@
-body {
-    margin: 0;
+#pc-header-top {
+    background: linear-gradient(to right, rgb(235, 0, 85), rgb(50, 0, 150));
 }
 
-body {
-    display: flex;
-    height: 100vh;
-}
-
-.mdc-drawer-app-content {
-    flex: auto;
-    overflow: auto;
-    position: relative;
-}
-
-.main-content {
-    overflow: auto;
-    height: 100%;
-}
-
-.app-bar {
-    position: absolute;
-}
-
-.mdc-top-app-bar {
-    z-index: 7;
-}
-
-.drawer-main-content {
-    overflow: auto;
-    height: 100%;
-    padding: 0 18px;
-}
-
-.drawer-frame-app-content {
-    position: relative;
-    flex: 1;
-}
-
-.drawer-top-app-bar {
-    position: absolute;
-}
-
-.p-2 {
-    padding: 1.2rem;
-}
-
-.pc-search {
-    margin: 1.5rem 2rem;
-}
-
-.button-container button {
-  margin: 1rem;
-}
-
-.pc-rm-padding {
-    padding: 0;
-}
-
-.pc-section-spacing {
-    margin-top: 4rem;
-}
-
-.pagination {
-  display: inline-block;
-  margin-top: 2rem;
-}
-
-.pagination a {
-  color: black;
-  float: left;
-  padding: 8px 16px;
-  text-decoration: none;
-}
-
-.pagination a.active {
-  background-color: #eb0055;
-  color: white;
-}
-
-.pagination a:hover:not(.active) {background-color: #fcccde;}
-
-:root {
-    --mdc-theme-primary: #eb0055;
-    --mdc-theme-secondary: #320096;
-    --mdc-theme-error: #B60025;
-}
+/* body { */
+/*     margin: 0; */
+/* } */
+/*  */
+/* body { */
+/*     display: flex; */
+/*     height: 100vh; */
+/* } */
+/*  */
+/* .mdc-drawer-app-content { */
+/*     flex: auto; */
+/*     overflow: auto; */
+/*     position: relative; */
+/* } */
+/*  */
+/* .main-content { */
+/*     overflow: auto; */
+/*     height: 100%; */
+/* } */
+/*  */
+/* .app-bar { */
+/*     position: absolute; */
+/* } */
+/*  */
+/* .mdc-top-app-bar { */
+/*     z-index: 7; */
+/* } */
+/*  */
+/* .drawer-main-content { */
+/*     overflow: auto; */
+/*     height: 100%; */
+/*     padding: 0 18px; */
+/* } */
+/*  */
+/* .drawer-frame-app-content { */
+/*     position: relative; */
+/*     flex: 1; */
+/* } */
+/*  */
+/* .drawer-top-app-bar { */
+/*     position: absolute; */
+/* } */
+/*  */
+/* .p-2 { */
+/*     padding: 1.2rem; */
+/* } */
+/*  */
+/* .pc-search { */
+/*     margin: 1.5rem 2rem; */
+/* } */
+/*  */
+/* .button-container button { */
+/*   margin: 1rem; */
+/* } */
+/*  */
+/* .pc-rm-padding { */
+/*     padding: 0; */
+/* } */
+/*  */
+/* .pc-section-spacing { */
+/*     margin-top: 4rem; */
+/* } */
+/*  */
+/* .pagination { */
+/*   display: inline-block; */
+/*   margin-top: 2rem; */
+/* } */
+/*  */
+/* .pagination a { */
+/*   color: black; */
+/*   float: left; */
+/*   padding: 8px 16px; */
+/*   text-decoration: none; */
+/* } */
+/*  */
+/* .pagination a.active { */
+/*   background-color: #eb0055; */
+/*   color: white; */
+/* } */
+/*  */
+/* .pagination a:hover:not(.active) {background-color: #fcccde;} */
+/*  */
+/* :root { */
+/*     --mdc-theme-primary: #eb0055; */
+/*     --mdc-theme-secondary: #320096; */
+/*     --mdc-theme-error: #B60025; */
+/* } */
