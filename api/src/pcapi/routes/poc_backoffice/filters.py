@@ -1,39 +1,45 @@
 from flask import Flask
 
-from pcapi.core.users import models
+from pcapi.core.users import models as users_models
 
 
-def format_user_state(user: models.User) -> str:
-    if user.isActive:
+def format_state(is_active: bool) -> str:
+    if is_active:
         return "Actif"
     return "Suspendu"
 
 
-def format_user_roles(user: models.User) -> str:
-    if not user.roles:
-        return "Aucune information"
-
-    match user.roles[0]:
-        case models.UserRole.ADMIN:
+def format_roles(role: str) -> str:
+    match role:
+        case users_models.UserRole.ADMIN:
             return "Admin"
-        case models.UserRole.PRO:
+        case users_models.UserRole.PRO:
             return "Pro"
-        case models.UserRole.TEST:
+        case users_models.UserRole.TEST:
             return "Test"
-        case models.UserRole.BENEFICIARY:
+        case users_models.UserRole.BENEFICIARY:
             return "Pass 18"
-        case models.UserRole.UNDERAGE_BENEFICIARY:
+        case users_models.UserRole.UNDERAGE_BENEFICIARY:
             return "Pass 15-17"
+        case _:
+            return "Aucune information"
 
 
-def format_user_phone_number(user: models.User) -> str:
-    if not user.phoneNumber:
+def format_phone_number(phone_number: str) -> str:
+    if not phone_number:
         return ""
 
-    return user.phoneNumber  # type: ignore
+    return phone_number
+
+
+def empty_string_if_null(text: str | None) -> str:
+    if text is None:
+        return ""
+    return text
 
 
 def install_template_filters(app: Flask) -> None:
-    app.jinja_env.filters["format_user_state"] = format_user_state
-    app.jinja_env.filters["format_user_roles"] = format_user_roles
-    app.jinja_env.filters["format_user_phone_number"] = format_user_phone_number
+    app.jinja_env.filters["format_state"] = format_state
+    app.jinja_env.filters["format_roles"] = format_roles
+    app.jinja_env.filters["format_phone_number"] = format_phone_number
+    app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null

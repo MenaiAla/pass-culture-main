@@ -16,6 +16,7 @@ from pcapi.models.feature import FeatureToggle
 from . import blueprint
 from . import search_utils
 from . import utils
+from .forms import search as search_forms
 from .serialization import search
 
 
@@ -24,8 +25,6 @@ GetBaseQuery = typing.Callable[[int], BaseQuery]
 
 class Context:
     fetch_rows_func: search_utils.SearchFunc
-    template_columns_header: list[str]
-    template_columns: list[str]
     get_item_base_query: GetBaseQuery
 
     @classmethod
@@ -35,8 +34,6 @@ class Context:
 
 class UserContext(Context):
     fetch_rows_func = users_api.search_pro_account
-    template_columns_header = ["id", "prénom", "nom", "email"]
-    template_columns = ["id", "firstName", "lastName", "email"]
     get_item_base_query = users_api.get_pro_account_base_query
 
     @classmethod
@@ -46,8 +43,6 @@ class UserContext(Context):
 
 class OffererContext(Context):
     fetch_rows_func = offerers_api.search_offerer
-    template_columns_header = ["id", "nom", "ville", "code postal"]
-    template_columns = ["id", "name", "city", "postalCode"]
     get_item_base_query = offerers_api.get_offerer_base_query
 
     @classmethod
@@ -57,8 +52,6 @@ class OffererContext(Context):
 
 class VenueContext(Context):
     fetch_rows_func = offerers_api.search_venue
-    template_columns_header = ["id", "nom", "adresse", "code postal", "ville"]
-    template_columns = ["id", "name", "address", "postalCode", "city"]
     get_item_base_query = offerers_api.get_venue_base_query
 
     @classmethod
@@ -66,22 +59,36 @@ class VenueContext(Context):
         return url_for(".get_pro", row_id=row_id, pro_type="venue")
 
 
+def render_search_template(form: search_forms.ProSearchForm | None = None) -> str:
+    if form is None:
+        form = search_forms.ProSearchForm()
+
+    return render_template(
+        "pro/search.html",
+        title="Recherche pro",
+        dst=url_for(".search_pro"),
+        type_options=[opt.value for opt in search.TypeOptions],
+        form=search_forms.ProSearchForm(),
+    )
+
+
 @blueprint.poc_backoffice_web.route("/pro/search", methods=["GET"])
 @utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC)
 @utils.permission_required(perm_models.Permissions.SEARCH_PRO_ACCOUNT, redirect_to=".unauthorized")
 def search_pro():  # type: ignore
     if not request.args:
-        return render_template(
-            "pro/search.html",
-            title="Recherche pro",
-            dst=url_for(".search_pro"),
-            type_options=[opt.value for opt in search.TypeOptions],
-        )
+        return render_search_template()
+
+    form = search_forms.ProSearchForm(request.args)
+    if not form.validate():
+        return render_search_template(form)
 
     try:
-        search_model = search.SearchProModel(**request.args)
-    except pydantic.ValidationError:
-        return redirect(url_for(".invalid_search"))
+        search_model = search.SearchProModel(**form.data)
+    except pydantic.ValidationError as err:
+        for error in err.errors():
+            form.add_error_to(error["loc"][0])
+        return render_search_template(form)
 
     next_page = partial(
         url_for,
@@ -97,9 +104,10 @@ def search_pro():  # type: ignore
     next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
 
     return render_template(
-        "search/result.html",
-        columns_header=context.template_columns_header,
-        columns=context.template_columns,
+        "pro/search_result.html",
+        form=form,
+        dst=url_for(".search_pro"),
+        result_type=form.type.data,
         next_pages_urls=next_pages_urls,
         new_search_url=url_for(".search_pro"),
         get_link_to_detail=context.get_pro_link,

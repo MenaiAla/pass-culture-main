@@ -5,16 +5,20 @@
                 {{ row.isActive | format_state }}
             </span>
             <span class="badge rounded-pill text-bg-secondary">
-                {{ row.roles[0] | format_roles }}
+                Structure
             </span>
         </h5>
 
         <h5 class="card-title">
-            {{ row.firstName }} {{ row.lastName }}
+            {{ row.name | upper }}
         </h5>
 
+        <h6 class="card-subtitle mt-4 mb-3 text-muted">
+            Offerer ID : {{ row.id }}
+        </h6>
+
         <h6 class="card-subtitle mb-4 text-muted">
-            User ID : {{ row.id }}
+            SIREN : {{ row.siren }}
         </h6>
 
         <div class="fs-6">

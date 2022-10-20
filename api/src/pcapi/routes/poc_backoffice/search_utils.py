@@ -3,15 +3,15 @@ import typing
 from flask_sqlalchemy import BaseQuery
 from flask_sqlalchemy import Pagination
 
-from .forms import search as search_forms
+from .serialization import search
 
 
 SearchFunc = typing.Callable[[typing.Iterable[str], list[str] | None], BaseQuery]
 
 
-def fetch_paginated_rows(search_func: SearchFunc, form: search_forms.SearchForm) -> Pagination:
-    query = search_func(form.terms.data, ["id"])
-    return query.paginate(page=form.page.data, per_page=form.per_page.data, error_out=False)
+def fetch_paginated_rows(search_func: SearchFunc, search_model: search.SearchUserModel) -> Pagination:
+    query = search_func(search_model.terms, search_model.order_by)
+    return query.paginate(page=search_model.page, per_page=search_model.per_page, error_out=False)
 
 
 UrlForPartial = typing.Callable[[int], str]

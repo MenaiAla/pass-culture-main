@@ -1,34 +1,11 @@
-{% extends "layouts/connected.html" %}
+{% extends "layouts/pro.html" %}
 
-{% from "layouts/connected.html" import MENU_AC_LISTE_ACTEURS_CULTURELS %}
-{% set CURRENT_PATH = MENU_AC_LISTE_ACTEURS_CULTURELS %}
+{% from "components/search/base.html" import build_base_search with context %}
 
-{% block pageTitle %}
-    Rechercher des pros
-{% endblock %}
-
-{% block page %}
-    <form action={{ dst }} method="GET">
-        <input type="text" id="search_terms" name="terms" />
-
-        {% if order_by_options %}
-            <label for="order_by">Sort by column</label>
-            <select id="search_order_by" name="order_by">
-                {% for field in order_by_options %}
-                    <option value={{ field }}>{{ field }}</option>
-                {% endfor %}
-            </select>
-        {% endif %}
-
-        <label for="order_by">Type</label>
-        <select id="search_pro_type" name="type">
-            {% for field in type_options %}
-                <option value={{ field }}>{{ field }}</option>
-            {% endfor %}
-        </select>
-
-        <br />
-
-        <button type="submit">Search</button>
-    </form>
+{% block pro_main_content %}
+    {% call build_base_search() %}
+        Retrouve une structure ou un lieu par raison sociale, SIREN, SIRET,
+        ou par l'identité du pro (nom, prénom, email rattaché au SIRET, 
+        numéro de téléphone).
+    {% endcall %}
 {% endblock %}

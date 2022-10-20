@@ -1,5 +1,5 @@
-import typing
 import enum
+import typing
 
 import pydantic
 
@@ -20,8 +20,8 @@ SortByCol = typing.Literal[
 
 SearchTerms = pydantic.conlist(item_type=SearchTerm, min_items=1, max_items=16, unique_items=True)
 SearchOrderBy = pydantic.conlist(item_type=SortByCol, min_items=0, max_items=16, unique_items=True)  # type: ignore
-SearchPage = pydantic.conint(ge=1, le=10)
-SearchPerPage = pydantic.conint(ge=1, le=100)
+SearchPage = pydantic.conint(ge=1, le=100)
+SearchPerPage = pydantic.conint(ge=1, le=21)
 
 OrderByCols: typing.Collection[str] = SortByCol.__args__  # type: ignore
 

@@ -1,24 +1,19 @@
 import typing
 
+from flask import render_template
 from flask_wtf import FlaskForm
 import wtforms
 from wtforms import validators
-from wtforms import fields
-from flask import render_template
+
+from pcapi.routes.poc_backoffice.serialization.search import TypeOptions
 
 
 def search_terms_field_widget(field: wtforms.StringField, *args: typing.Any, **kwargs: typing.Any) -> str:
     return render_template("components/forms/search/terms.html", field=field)
 
 
-def filter_list_input(field: fields.Field) -> list[str] | None:
-    if field is None:
-        return None
-
-    if isinstance(field, list):
-        return [item.strip() for item in field]
-
-    return [item.strip() for item in field.split(",")]
+def search_type_field_widget(field: wtforms.SelectField, *args: typing.Any, **kwargs: typing.Any) -> str:
+    return render_template("components/forms/search/type.html", field=field, selected=field.data)
 
 
 class SearchForm(FlaskForm):
@@ -30,53 +25,41 @@ class SearchForm(FlaskForm):
         widget=search_terms_field_widget,
         validators=[
             validators.InputRequired(message="Recherche vide, veuillez saisir un terme"),
-            validators.Length(min=1, max=4096, message="Longueur de l'expression recherchée incorrecte"),
         ],
     )
 
-    order_by = wtforms.HiddenField(
-        "order_by",
-        default=["id"],
-        validators=[
-            validators.Optional(strip_whitespace=True),
-            #  validators.AnyOf(values=["id", "firstName", "lastName", "email"], message="Valeur de tri incorrecte"),
-        ],
-    )
+    order_by = wtforms.HiddenField("order_by", validators=[validators.Optional(strip_whitespace=True)])
 
-    page = wtforms.HiddenField(
-        "page",
-        default=1,
-        validators=[
-            validators.Optional(),
-            validators.NumberRange(min=1, max=128, message="Numéro de page incorrect"),
-        ]
-    )
+    page = wtforms.HiddenField("page", validators=[validators.Optional()])
 
-    per_page = wtforms.HiddenField(
-        "per_page",
-        default=20,
-        validators=[
-            validators.Optional(),
-            validators.NumberRange(min=1, max=64, message="Nombre de résultats par page incorrect")
-        ]
-    )
+    per_page = wtforms.HiddenField("per_page", validators=[validators.Optional()])
 
-    @classmethod
-    def filter_terms(cls, field: fields.Field) -> list[str] | None:
-        return filter_list_input(field)
+    def add_error_to(self, field_name: str) -> None:
+        msg = self.error_msg_builder(field_name)
 
-    @classmethod
-    def filter_order_by(cls, field: fields.Field) -> list[str] | None:
-        return filter_list_input(field)
+        field = getattr(self, field_name)
+        field.errors.append(msg)
 
-    @classmethod
-    def filter_page(cls, field: fields.Field) -> int:
-        return int(field)
-
-    @classmethod
-    def filter_per_page(cls, field: fields.Field) -> int:
-        return int(field)
+    def error_msg_builder(self, field_name: str) -> str:
+        match field_name:
+            case "terms":
+                return "Recherche invalide"
+            case "order_by":
+                return "Valeur de tri invalide"
+            case "page":
+                return "Numéro de page invalide"
+            case "per_page":
+                return "Nombre de résultats par page invalide"
+            case _:
+                return "Champ inconnu"
 
 
 class ProSearchForm(SearchForm):
-    pass
+    type = wtforms.SelectField(
+        "type",
+        widget=search_type_field_widget,
+        choices=[opt.value for opt in TypeOptions],
+        validators=[
+            validators.InputRequired(message="Type de ressource invalide"),
+        ],
+    )

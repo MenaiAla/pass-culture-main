@@ -1,6 +1,5 @@
 from functools import partial
 
-from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -24,55 +23,55 @@ from .serialization import search
 @utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT, redirect_to=".unauthorized")
 def search_public_accounts():  # type: ignore
     if not request.args:
-        return render_template(
-            "accounts/search.html",
-            title="Recherche grand public",
-            dst=url_for(".search_public_accounts"),
-            order_by_options=search.OrderByCols,
-            form=search_forms.SearchForm(),
-        )
-
-    #  try:
-    #      search_model = search.SearchUserModel(**request.args)
-    #  except pydantic.ValidationError:
-    #      return redirect(url_for(".invalid_search"))
+        return render_search_template()
 
     form = search_forms.SearchForm(request.args)
     if not form.validate():
-        return render_template(
-            "accounts/search.html",
-            title="Recherche grand public",
-            dst=url_for(".search_public_accounts"),
-            order_by_options=search.OrderByCols,
-            form=form,
-        )
+        return render_search_template(form)
+
+    try:
+        search_model = search.SearchUserModel(**form.data)
+    except pydantic.ValidationError as err:
+        for error in err.errors():
+            form.add_error_to(error["loc"][0])
+        return render_search_template(form)
 
     next_page = partial(
         url_for,
         ".search_public_accounts",
-        terms=form.terms.data,
-        order_by=form.order_by.data,
-        page=form.page.data,
-        per_page=form.per_page.data,
+        terms=search_model.terms,
+        order_by=search_model.order_by,
+        page=search_model.page,
+        per_page=search_model.per_page,
     )
 
-    paginated_rows = fetch_rows(form)
-    next_pages_urls = search_utils.pagination_links(next_page, form.page.data, paginated_rows.pages)
-
-    column_headers = ["id", "prénom", "nom", "status", "pass", "email", "téléphone"]
-    columns = ["id", "firstName", "lastName", "isActive", "roles", "email", "phoneNumber"]
+    paginated_rows = fetch_rows(search_model)
+    next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
 
     return render_template(
         "accounts/search_result.html",
-        columns_header=column_headers,
-        columns=columns,
+        dst=url_for(".search_public_accounts"),
+        form=form,
         next_pages_urls=next_pages_urls,
         new_search_url=url_for(".search_public_accounts"),
         get_link_to_detail=get_public_account_link,
         rows=paginated_rows,
-        terms=form.terms.data,
-        order_by=form.order_by.data,
-        per_page=form.per_page.data,
+        terms=search_model.terms,
+        order_by=search_model.order_by,
+        per_page=search_model.per_page,
+    )
+
+
+def render_search_template(form: search_forms.SearchForm | None = None) -> str:
+    if not form:
+        form = search_forms.SearchForm()
+
+    return render_template(
+        "accounts/search.html",
+        title="Recherche grand public",
+        dst=url_for(".search_public_accounts"),
+        order_by_options=search.OrderByCols,
+        form=form,
     )
 
 

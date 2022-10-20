@@ -5,21 +5,25 @@
                 {{ row.isActive | format_state }}
             </span>
             <span class="badge rounded-pill text-bg-secondary">
-                {{ row.roles[0] | format_roles }}
+                Lieu permanent
             </span>
         </h5>
 
         <h5 class="card-title">
-            {{ row.firstName }} {{ row.lastName }}
+            {{ row.name | upper }}
         </h5>
 
+        <h6 class="card-subtitle mt-4 mb-3 text-muted">
+            Offerer ID : {{ row.managingOffererId | empty_string_if_null }}
+        </h6>
+
         <h6 class="card-subtitle mb-4 text-muted">
-            User ID : {{ row.id }}
+            SIRET : {{ row.siret | empty_string_if_null }}
         </h6>
 
         <div class="fs-6">
-            <p class="mb-1"><span class="fw-bold">mail:</span> {{ row.email }} </p>
-            <p><span class="fw-bold">tel:</span> {{ row.phoneNumber | format_phone_number }} </p>
+            <p class="mb-1"><span class="fw-bold">mail:</span> {{ row.contact.email | empty_string_if_null }} </p>
+            <p><span class="fw-bold">tel:</span> {{ row.contact.phone_number | format_phone_number }} </p>
         </div>
 
         <a href={{ get_link_to_detail(row.id) }} class="card-link">

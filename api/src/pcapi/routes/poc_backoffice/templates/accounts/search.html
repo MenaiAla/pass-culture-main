@@ -1,66 +1,56 @@
-{% extends "layouts/connected.html" %}
+{% extends "layouts/accounts.html" %}
 
-{% from "layouts/connected.html" import MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR %}
-{% set CURRENT_PATH = MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR %}
-
-{% block page %}
-    <div class="p-4">
-        <h1 class="text-muted pb-4">Jeunes bénéficiaires ou à venir</h1>
-
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3">
-                    {# <div class="d-flex flex-column align-items-center text-black min-vh-100"> #}
-                    {# </div> #}
-                </div>
-
-                <div class="col-6 mt-5">
-                    <div class="mt-5 text-center">
-                        <p class="text-center fs-1 text-primary">
-                            <i class="bi bi-search"></i>
-                        </p>
-
-                        <p>
-                            Retrouve un utilisateur à partir de son nom, prénom, date de naissance,
-                            identifiant, numéro de téléphone ou de son adresse email. 
-                        </p>
-
-                        <div class="w-100 my-4">
-                            {% for form_field in form %}
-                                {% for error in form_field.errors %}
-                                    <p class="text-warning lead">{{ error }}</p>
-                                {% endfor %}
-                            {% endfor %}
-                        </div>
-
-                        <form action={{ dst }} method="GET">
-                            {% for form_field in form %}
-                                {{ form_field }}
-                            {% endfor %}
-
-                            <button type="submit" class="btn btn-primary">Chercher</button>
-
-                            {# {% if order_by_options %} #}
-                                {#     <label for="order_by">Sort by column</label> #}
-                                {#     <select id="search_order_by" name="order_by"> #}
-                                    {#         {% for field in order_by_options %} #}
-                                        {#             <option value={{ field }}>{{ field }}</option> #}
-                                    {#         {% endfor %} #}
-                                    {#     </select> #}
-                            {# {% endif %} #}
-                            {#  #}
-                            {# {% block extra_search_fields %} #}
-                            {# {% endblock %} #}
-
-                        </form>
-                    </div>
-                </div>
-
-                <div class="col-3">
-                </div>
-            </div>
-        </div>
-
+{% block accounts_main_content %}
+<div class="row">
+    <div class="col-3">
     </div>
+
+    <div class="col-6 mt-5">
+        <div class="mt-5 text-center">
+            <p class="text-center fs-1 text-primary">
+                <i class="bi bi-search"></i>
+            </p>
+
+            <p>
+                Retrouve un utilisateur à partir de son nom, prénom, date de naissance,
+                identifiant, numéro de téléphone ou de son adresse email. 
+            </p>
+
+            <div class="w-100 my-4">
+                {% for form_field in form %}
+                    {% for error in form_field.errors %}
+                        <p class="text-warning lead">{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+
+            <form action={{ dst }} method="GET">
+                {% for form_field in form %}
+                    {{ form_field }}
+                {% endfor %}
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Chercher</button>
+                </div>
+
+                {# {% if order_by_options %} #}
+                    {#     <label for="order_by">Sort by column</label> #}
+                    {#     <select id="search_order_by" name="order_by"> #}
+                        {#         {% for field in order_by_options %} #}
+                            {#             <option value={{ field }}>{{ field }}</option> #}
+                        {#         {% endfor %} #}
+                        {#     </select> #}
+                {# {% endif %} #}
+                {#  #}
+                {# {% block extra_search_fields %} #}
+                {# {% endblock %} #}
+
+            </form>
+        </div>
+    </div>
+
+    <div class="col-3">
+    </div>
+</div>
 {% endblock %}
 
