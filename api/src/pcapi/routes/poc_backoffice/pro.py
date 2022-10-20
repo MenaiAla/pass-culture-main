@@ -118,6 +118,7 @@ def search_pro():  # type: ignore
     )
 
 
+# TODO à suppr pour que ça ne gère que les Venue ou les users
 @blueprint.poc_backoffice_web.route("/pro/<string:pro_type>/<int:row_id>", methods=["GET"])
 @utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC)
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT, redirect_to=".unauthorized")
