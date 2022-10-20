@@ -32,7 +32,7 @@
             <p class="card-text">
                 <label>Région :</label>
                 <sapn class="fw-light">
-                    {{ offerer.region }}
+                    {{ offerer.postalCode }}
                     </span>
             </p>
             <p class="card-text">
@@ -43,6 +43,12 @@
             </p>
         </div>
     </div>
+
+
+    <turbo-frame id="total_revenue_frame" src={{ url_for("poc_backoffice_web.get_offerer_stats", offerer_id=offerer.id)
+        }}>
+        <div>test</div>
+    </turbo-frame>
 
 </div>
 

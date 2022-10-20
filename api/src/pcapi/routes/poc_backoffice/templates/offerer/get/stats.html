@@ -1,0 +1,9 @@
+<turbo-frame id="total_revenue_frame">
+    <div>
+        {{ total_revenue }}
+        {{ offers_stats.individual_offers["active"] if offers_stats.individual_offers else 0 }}
+        {{ offers_stats.collective_offers["active"] if offers_stats.collective_offers else 0 }}
+        {{ offers_stats.individual_offers["inactive"] if offers_stats.individual_offers else 0 }}
+        {{ offers_stats.collective_offers["inactive"] if offers_stats.collective_offers else 0 }}
+    </div>
+</turbo-frame>
