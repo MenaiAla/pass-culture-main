@@ -36,11 +36,10 @@ def get_offerer(offerer_id: int):  # type: ignore
 @blueprint.poc_backoffice_web.route("/pro/offerer/<int:offerer_id>/stats", methods=["GET"])
 @utils.ff_enabled(FeatureToggle.ENABLE_NEW_BACKOFFICE_POC)
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT, redirect_to=".unauthorized")
+@utils.handle_errors(error_template="components/error.html", turbo_frame_id="total_revenue_frame")
 def get_offerer_stats(offerer_id: int):  # type: ignore
     total_revenue = offerers_api.get_offerer_total_revenue(offerer_id)
     offers_stats = offerers_api.get_offerer_offers_stats(offerer_id)
-
-    time.sleep(2)
 
     return render_template(
         "offerer/get/stats.html",

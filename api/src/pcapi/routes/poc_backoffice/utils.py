@@ -5,6 +5,7 @@ import typing
 from flask import Response
 from flask import request
 from flask import url_for
+from flask import render_template
 from flask_login import current_user
 import werkzeug
 
@@ -74,6 +75,21 @@ def custom_login_required(redirect_to: str) -> typing.Callable:
                 return werkzeug.utils.redirect(url_for(redirect_to))
 
             return func(*args, **kwargs)
+
+        return wrapped
+
+    return wrapper
+
+
+def handle_errors(error_template: str, **top_kwargs) -> typing.Callable:
+    def wrapper(func: typing.Callable) -> typing.Callable:
+        @wraps(func)
+        def wrapped(*args, **kwargs) -> tuple[Response, int] | typing.Callable:  # type: ignore[no-untyped-def]
+            try:
+                return func(*args, **kwargs)
+            except Exception:
+                print(error_template, top_kwargs)
+                return render_template(error_template, **top_kwargs)
 
         return wrapped
 
