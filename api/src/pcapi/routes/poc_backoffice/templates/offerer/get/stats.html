@@ -1,9 +1,54 @@
 <turbo-frame id="total_revenue_frame">
-    <div>
-        {{ total_revenue }}
-        {{ offers_stats.individual_offers["active"] if offers_stats.individual_offers else 0 }}
-        {{ offers_stats.collective_offers["active"] if offers_stats.collective_offers else 0 }}
-        {{ offers_stats.individual_offers["inactive"] if offers_stats.individual_offers else 0 }}
-        {{ offers_stats.collective_offers["inactive"] if offers_stats.collective_offers else 0 }}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="display-6 card-title">
+                        {{ total_revenue }}
+                    </h6>
+                    <p class="card-text fw-lighter small">
+                        de CA
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body row">
+                    <div class="col-6">
+                        <h6 class="display-6 card-title">
+                            {{ offers_stats["active"]["individual"] + offers_stats["active"]["collective"] }}
+                        </h6>
+                        <p class="card-text fw-lighter small mb-0">
+                            offres actives
+                        </p>
+                        <p class="card-text fw-lighter small">
+                            ({{ offers_stats["active"]["individual"] }} IND et {{ offers_stats["active"]["collective"]
+                            }} EAC)
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="display-6 card-title">
+                            {{ offers_stats["inactive"]["individual"] + offers_stats["inactive"]["collective"] }}
+                        </h6>
+                        <p class="card-text fw-lighter small mb-0">
+                            offres inactives
+                        </p>
+                        <p class="card-text fw-lighter small">
+                            ({{ offers_stats["inactive"]["individual"] }} IND et {{
+                            offers_stats["inactive"]["collective"]
+                            }} EAC)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    Remboursement TBD
+                </div>
+            </div>
+        </div>
     </div>
 </turbo-frame>
