@@ -47,12 +47,12 @@ def get_offerer_stats(offerer_id: int):  # type: ignore
         total_revenue=total_revenue,
         offers_stats={  # a bit dirty, get_offerer_offers_stats should return integers only
             "active": {
-                "individual": offers_stats.individual_offers["active"] if offers_stats.individual_offers else 0,
-                "collective": offers_stats.collective_offers["active"] if offers_stats.collective_offers else 0,
+                "individual": offers_stats.individual_offers.get("active", 0) if offers_stats.individual_offers else 0,
+                "collective": offers_stats.collective_offers.get("active", 0) if offers_stats.collective_offers else 0,
             },
             "inactive": {
-                "individual": offers_stats.individual_offers["inactive"] if offers_stats.individual_offers else 0,
-                "collective": offers_stats.collective_offers["inactive"] if offers_stats.collective_offers else 0,
+                "individual": offers_stats.individual_offers.get("inactive", 0) if offers_stats.individual_offers else 0,
+                "collective": offers_stats.collective_offers.get("inactive", 0) if offers_stats.collective_offers else 0,
             },
         },
     )
