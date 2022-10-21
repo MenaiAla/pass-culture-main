@@ -30,7 +30,7 @@ def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int 
 
         @wraps(f)
         def delay(payload: payload_in_kwargs):  # type: ignore [no-untyped-def]
-            if settings.IS_RUNNING_TESTS:
+            if settings.IS_RUNNING_TESTS or settings.IS_DEV:
                 f(payload)
                 return
 

@@ -1,0 +1,23 @@
+{% extends "layouts/accounts.html" %}
+
+{% block accounts_main_content %}
+
+    <div class="w-100 my-4">
+        {% for form_field in form %}
+            {% for error in form_field.errors %}
+                <p class="text-warning lead">{{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <form action={{ dst }} method="PATCH">
+        {% for field in form %}
+            {{ field }}
+        {% endfor %}
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Sauvegarder</button>
+        </div>
+    </form>
+
+{% endblock %}

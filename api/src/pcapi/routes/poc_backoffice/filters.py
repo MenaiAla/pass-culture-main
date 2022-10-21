@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask
 
 from pcapi.core.users import models as users_models
@@ -38,8 +40,13 @@ def empty_string_if_null(text: str | None) -> str:
     return text
 
 
+def format_date(data: datetime.date | datetime.datetime, format: str | None = "%d/%m/%Y") -> str:
+    return data.strftime(format)
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_roles"] = format_roles
     app.jinja_env.filters["format_phone_number"] = format_phone_number
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
+    app.jinja_env.filters["format_date"] = format_date

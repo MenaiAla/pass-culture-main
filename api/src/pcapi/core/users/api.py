@@ -1014,11 +1014,12 @@ def public_account_history(user: models.User) -> list[dict]:
         for review in reviews
     ]
 
+    default_public_name = lambda author: author.publicName if author else ""
     imports_history = [
         {
             "action": f"import {import_.source}",
             "datetime": status.date,
-            "message": f"par {status.author.publicName}: {status.status.value} ({status.detail})",
+            "message": f"par {default_public_name(status.author)}: {status.status.value} ({status.detail})",
         }
         for import_ in imports
         for status in import_.statuses

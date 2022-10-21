@@ -1,0 +1,33 @@
+<div class="card my-4">
+    <div class="card-body">
+        <h5 class="card-title text-bold fs-2 m-3">
+            Parcours d'inscription
+            <span class="badge rounded-pill text-bg-secondary fs-6 align-middle mx-4">
+                {{ user.roles[0] | format_roles }}
+            </span>
+        </h5>
+
+        <div class="card-body">
+            <div class="row py-3">
+
+                <div class="col-3">
+                    <h6 class="fs-6 fw-bold">Validation email </h6>
+                </div>
+                <div class="col-1">
+                    <p>{{ user.lastName | upper }} </p>
+                </div>
+
+                <div class="col-4">
+                </div>
+
+                <div class="col-3">
+                    <h6 class="fs-6 fw-bold">Complétion profil </h6>
+                </div>
+                <div class="col-1">
+                    <p>{{ user.firstName }} </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
