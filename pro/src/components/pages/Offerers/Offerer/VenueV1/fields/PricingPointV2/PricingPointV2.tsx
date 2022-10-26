@@ -10,7 +10,7 @@ import ConfirmDialog from 'new_components/ConfirmDialog'
 import { ButtonLink } from 'ui-kit/Button'
 import Button from 'ui-kit/Button/Button'
 import { Select } from 'ui-kit/form'
-import { Banner, Title } from 'ui-kit/index'
+import { Banner } from 'ui-kit/index'
 
 import styles from './PricingPointV2.module.scss'
 
@@ -69,9 +69,7 @@ const PricingPointV2 = ({
   return (
     <>
       <div className="main-list-title">
-        <Title as="h3" className="sub-title" level={4}>
-          Barème de remboursement
-        </Title>
+        <h3 className="sub-title">Barème de remboursements</h3>
       </div>
       {!readOnly && !venue.pricingPoint && isBannerVisible && (
         <Banner
