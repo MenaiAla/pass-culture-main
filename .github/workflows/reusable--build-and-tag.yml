@@ -46,75 +46,75 @@ jobs:
         with:
           ref: ${{ inputs.base_ref }}
 
-      - name: Author
-        run: |
-          git config --global user.email "$GIT_CONFIG_EMAIL"
-          git config --global user.name "$GIT_CONFIG_NAME"
+      # - name: Author
+      #   run: |
+      #     git config --global user.email "$GIT_CONFIG_EMAIL"
+      #     git config --global user.name "$GIT_CONFIG_NAME"
 
-      - name: Add version to api
-        run: |
-          cd ./api
-          echo "${{ inputs.tag_number }}" > version.txt
-          git add version.txt
+      # - name: Add version to api
+      #   run: |
+      #     cd ./api
+      #     echo "${{ inputs.tag_number }}" > version.txt
+      #     git add version.txt
 
-      - name: Add version to pro
-        run: |
-          cd pro
-          yarn version --new-version "${{ inputs.tag_number }}"
-          git add package.json
+      # - name: Add version to pro
+      #   run: |
+      #     cd pro
+      #     yarn version --new-version "${{ inputs.tag_number }}"
+      #     git add package.json
 
-      - name: Add version to adage
-        run: |
-          cd adage-front
-          yarn version --new-version "${{ inputs.tag_number }}"
-          git add package.json
+      # - name: Add version to adage
+      #   run: |
+      #     cd adage-front
+      #     yarn version --new-version "${{ inputs.tag_number }}"
+      #     git add package.json
 
-      - name: Output variables
-        id: vars
-        run: echo "DOCKER_REPO=${DOCKER_REGISTRY_REGION}-docker.pkg.dev/${DOCKER_REGISTRY_PROJECT_ID}/${DOCKER_REGISTRY_REPOSITORY}" >> $GITHUB_ENV
+      # - name: Output variables
+      #   id: vars
+      #   run: echo "DOCKER_REPO=${DOCKER_REGISTRY_REGION}-docker.pkg.dev/${DOCKER_REGISTRY_PROJECT_ID}/${DOCKER_REGISTRY_REPOSITORY}" >> $GITHUB_ENV
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v2
 
-      - id: openid-auth
-        name: "OpenID Connect Authentication"
-        uses: "google-github-actions/auth@v0"
-        with:
-          create_credentials_file: false
-          token_format: "access_token"
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      # - id: openid-auth
+      #   name: "OpenID Connect Authentication"
+      #   uses: "google-github-actions/auth@v0"
+      #   with:
+      #     create_credentials_file: false
+      #     token_format: "access_token"
+      #     workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      #     service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
 
-      - id: docker-login
-        uses: "docker/login-action@v1"
-        name: "Docker login"
-        with:
-          registry: "${{ env.DOCKER_REGISTRY_REGION }}-docker.pkg.dev"
-          username: "oauth2accesstoken"
-          password: "${{ steps.openid-auth.outputs.access_token }}"
+      # - id: docker-login
+      #   uses: "docker/login-action@v1"
+      #   name: "Docker login"
+      #   with:
+      #     registry: "${{ env.DOCKER_REGISTRY_REGION }}-docker.pkg.dev"
+      #     username: "oauth2accesstoken"
+      #     password: "${{ steps.openid-auth.outputs.access_token }}"
 
-      - name: "Build and push pcapi image"
-        uses: docker/build-push-action@v2
-        with:
-          context: api
-          push: true
-          target: pcapi
-          tags: ${{ env.DOCKER_REPO }}/pcapi:${{ inputs.tag_number }}
+      # - name: "Build and push pcapi image"
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: api
+      #     push: true
+      #     target: pcapi
+      #     tags: ${{ env.DOCKER_REPO }}/pcapi:${{ inputs.tag_number }}
 
-      - name: "Build and push pcapi-console image"
-        uses: docker/build-push-action@v2
-        with:
-          context: api
-          push: true
-          target: pcapi-console
-          tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ inputs.tag_number }}
+      # - name: "Build and push pcapi-console image"
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: api
+      #     push: true
+      #     target: pcapi-console
+      #     tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ inputs.tag_number }}
 
-      - name: Tag Release
-        run: |
-          git commit -m "🚀 $TAG_NAME" -n
-          git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
-          git push origin "$TAG_NAME"
+      # - name: Tag Release
+      #   run: |
+      #     git commit -m "🚀 $TAG_NAME" -n
+      #     git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
+      #     git push origin "$TAG_NAME"
 
-      - name: Push tag to base ref
-        if: ${{ inputs.base_ref_is_a_branch }}
-        run: git push origin "${{ inputs.base_ref }}"
+      # - name: Push tag to base ref
+      #   if: ${{ inputs.base_ref_is_a_branch }}
+      #   run: git push origin "${{ inputs.base_ref }}"
