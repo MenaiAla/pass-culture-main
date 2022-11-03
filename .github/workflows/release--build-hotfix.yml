@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Check worflow ref
         run: |
-          if ! [[ ${{ github.ref }} == refs/heads/maint\/\/v* ]]; then
-              echo "This workflow can only be triggered from a maintenance branch (starting with a 'maint/v')"
+          if ! [[ ${{ github.ref }} == refs/heads/test-maint/v* ]]; then
+              echo "This workflow can only be triggered from a maintenance branch (starting with 'maint/v')"
               exit 1
           fi
 
@@ -30,11 +30,11 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0 # Fetch all history to get all tags
-      - id: find-hotfix-tag-number
-
+      - name: Find hotfix tag number
+        id: find-hotfix-tag-number
         run: |
           GITHUB_REF=${{ github.ref }}
-          MAJOR_NUMBER=(${GITHUB_REF//refs\/heads\/maint\/v/ })
+          MAJOR_NUMBER=(${GITHUB_REF//refs\/heads\/test-maint\/v/ })
           CURRENT_PATCH_NUMBER=$(git tag -l "v${MAJOR_NUMBER}.0.*" | sort -V | tail -n 1 | cut -d. -f3)
           NEXT_PATCH_NUMBER=$((CURRENT_PATCH_NUMBER + 1))
           echo "hotfixTagNumber=${MAJOR_NUMBER}.0.${NEXT_PATCH_NUMBER}" >> $GITHUB_OUTPUT
@@ -45,6 +45,5 @@ jobs:
     uses: ./.github/workflows/reusable--build-and-tag.yml
     secrets: inherit
     with:
-      base_ref: ${{ github.ref }}
       tag_number: ${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
-      base_ref_is_a_branch: true
+      workflow_ref_is_a_branch: true
