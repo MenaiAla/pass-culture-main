@@ -26,8 +26,12 @@ def get_request_authorization() -> werkzeug.datastructures.Authorization | None:
 @app.login_manager.user_loader  # type: ignore [attr-defined]
 def get_user_with_id(user_id: int) -> users_models.User | None:
     flask.session.permanent = True
+
     session_uuid = flask.session.get("session_uuid")
-    if not users_models.UserSession.query.filter_by(userId=user_id, uuid=session_uuid).one_or_none():
+    session_context = flask.session.get("context")
+
+    query = users_models.UserSession.query.filter_by(userId=user_id, uuid=session_uuid, context=session_context)
+    if not query.one_or_none():
         return None
 
     try:
@@ -46,20 +50,25 @@ def send_401() -> tuple[flask.Response, int]:
     return flask.jsonify(e.errors), 401
 
 
-def stamp_session(user: users_models.User) -> None:
+def stamp_session(user: users_models.User, context: users_models.UserSessionContext | None = None) -> None:
     session_uuid = uuid.uuid4()
+
     flask.session["session_uuid"] = session_uuid
     flask.session["user_id"] = user.id
-    db.session.add(users_models.UserSession(userId=user.id, uuid=session_uuid))
+    flask.session["context"] = context.name if context else None
+
+    db.session.add(users_models.UserSession(userId=user.id, uuid=session_uuid, context=context))
     db.session.commit()
 
 
-def discard_session() -> None:
+def discard_session(context: users_models.UserSessionContext | None = None) -> None:
     session_uuid = flask.session.get("session_uuid")
     user_id = flask.session.get("user_id")
     flask.session.clear()
-    users_models.UserSession.query.filter_by(
-        userId=user_id,
-        uuid=session_uuid,
-    ).delete(synchronize_session=False)
+
+    filter_kwargs = {"userId": user_id, "uuid": session_uuid}
+    if context:
+        filter_kwargs["context"] = context.name
+
+    users_models.UserSession.query.filter_by(**filter_kwargs).delete(synchronize_session=False)
     db.session.commit()

@@ -703,6 +703,13 @@ class UserSuspension(PcObject, Base, Model):
     reasonCode = sa.Column(sa.Enum(constants.SuspensionReason), nullable=True)
 
 
+class UserSessionContext(enum.Enum):
+    PRO = "PRO"
+    OLD_ADMIN = "OLD_ADMIN"
+    BACKOFFICE = "BACKOFFICE"
+
+
 class UserSession(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, nullable=False)
     uuid: UUID = sa.Column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)
+    context: UserSessionContext | None = sa.Column(sa.Enum(UserSessionContext), nullable=True)

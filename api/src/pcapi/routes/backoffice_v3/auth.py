@@ -42,7 +42,7 @@ def login():  # type: ignore
         db.session.commit()
 
         login_user(local_admin, remember=True)
-        login_manager.stamp_session(local_admin)
+        login_manager.stamp_session(local_admin, users_models.UserSessionContext.BACKOFFICE)
         return werkzeug.utils.redirect(url_for(".home"))
 
     redirect_uri = url_for(".authorize", _external=True)
@@ -81,7 +81,7 @@ def authorize():  # type: ignore
         db.session.commit()
 
     login_user(user, remember=True)
-    login_manager.stamp_session(user)
+    login_manager.stamp_session(user, users_models.UserSessionContext.BACKOFFICE)
     return redirect(url_for(".home"))
 
 
