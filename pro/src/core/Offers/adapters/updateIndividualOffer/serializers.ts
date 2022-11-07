@@ -24,16 +24,13 @@ export const serializeExtraData = (
 }
 
 export const serializeDurationMinutes = (
-  durationHour: string
+  durationHour: Date | ''
 ): number | null => {
-  if (durationHour.trim().length === 0) {
+  if (durationHour === '') {
     return null
   }
-  const [hours, minutes] = durationHour
-    .split(':')
-    .map((s: string) => parseInt(s, 10))
 
-  return minutes + hours * 60
+  return durationHour.getMinutes() + durationHour.getHours() * 60
 }
 
 export const serializePatchOffer = (

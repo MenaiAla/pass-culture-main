@@ -9,7 +9,7 @@ export const SUBCATEGORIES_FIELDS_DEFAULT_VALUES = {
   speaker: '',
   stageDirector: '',
   visa: '',
-  durationMinutes: '',
+  durationMinutes: null,
   withdrawalType: undefined,
   withdrawalDelay: undefined,
 }

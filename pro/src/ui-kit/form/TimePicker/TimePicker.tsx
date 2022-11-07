@@ -17,6 +17,7 @@ interface ITimePickerProps {
   dateTime?: Date
   smallLabel?: boolean
   classNameFooter?: string
+  isOptional?: boolean
 }
 
 const TimePicker = ({
@@ -26,6 +27,7 @@ const TimePicker = ({
   disabled,
   label,
   smallLabel,
+  isOptional = false,
 }: ITimePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'text' })
   const ref = createRef<HTMLInputElement>()
@@ -37,6 +39,7 @@ const TimePicker = ({
       error={meta.error}
       label={label}
       name={name}
+      isOptional={isOptional}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
       classNameFooter={classNameFooter}

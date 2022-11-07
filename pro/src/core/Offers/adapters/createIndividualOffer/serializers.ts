@@ -24,19 +24,12 @@ export const serializeExtraData = (
   return extraData
 }
 
-const serializeDurationMinutes = (durationHour: string): number | null => {
-  /* istanbul ignore next: DEBT, TO FIX */
-  if (durationHour.trim().length === 0) {
+const serializeDurationMinutes = (durationHour: Date | ''): number | null => {
+  if (durationHour === '') {
     return null
   }
 
-  /* istanbul ignore next: DEBT, TO FIX */
-  const [hours, minutes] = durationHour
-    .split(':')
-    .map((s: string) => parseInt(s, 10))
-
-  /* istanbul ignore next: DEBT, TO FIX */
-  return minutes + hours * 60
+  return durationHour.getMinutes() + durationHour.getHours() * 60
 }
 
 export const serializePostOffer = (

@@ -22,7 +22,7 @@ const useSubCategoryUpdates = ({
 
   const resetSubCategoryFieldValues = (): void => {
     Object.entries(SUBCATEGORIES_FIELDS_DEFAULT_VALUES).forEach(
-      ([field, value]: [string, string | undefined]) => {
+      ([field, value]: [string, string | undefined | null]) => {
         setFieldValue(field, value)
       }
     )

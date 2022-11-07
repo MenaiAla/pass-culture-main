@@ -6,10 +6,13 @@ import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 
 import setSubCategoryFields from './setSubCategoryFields'
 
-const serializeDurationHour = (durationMinute: number): string => {
+const serializeDurationHour = (durationMinute: number): Date | '' => {
   const hours = Math.floor(durationMinute / 60)
   const minutes = durationMinute - hours * 60
-  return `${hours}:${minutes}`
+  const datetime = new Date()
+  datetime.setHours(hours)
+  datetime.setMinutes(minutes)
+  return datetime
 }
 
 const setInitialFormValues = (
