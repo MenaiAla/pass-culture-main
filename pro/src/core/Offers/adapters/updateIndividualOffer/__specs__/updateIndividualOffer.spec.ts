@@ -10,8 +10,8 @@ import { updateIndividualOffer } from '..'
 
 describe('updateIndividualOffer', () => {
   it('should sent patPatchOfferBodyModel to api', async () => {
-    const durationDate = new Date()
-    durationDate.setHours(2)
+    const durationMinutes = new Date()
+    durationMinutes.setHours(2, 20, 0, 0)
     const formValues: IOfferIndividualFormValues = {
       name: 'Test offer',
       description: 'Description for testing offer',
@@ -43,7 +43,7 @@ describe('updateIndividualOffer', () => {
       speaker: 'John Speaker',
       stageDirector: 'John Stage Director',
       visa: undefined,
-      durationMinutes: durationDate,
+      durationMinutes: durationMinutes,
       receiveNotificationEmails: true,
       bookingEmail: 'test@email.com',
       externalTicketOfficeUrl: 'https://example.com',

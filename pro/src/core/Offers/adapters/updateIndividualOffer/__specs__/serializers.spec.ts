@@ -12,10 +12,9 @@ import {
 
 describe('test updateIndividualOffer::serializers', () => {
   it('test serializeDurationMinutes', () => {
-    const durationDate = new Date()
-    durationDate.setHours(2)
-    durationDate.setMinutes(15)
-    expect(serializeDurationMinutes(durationDate)).toEqual(135)
+    const durationMinutes = new Date()
+    durationMinutes.setHours(2, 15, 0, 0)
+    expect(serializeDurationMinutes(durationMinutes)).toEqual(135)
   })
   it('test serializeDurationMinutes with empty input', () => {
     expect(serializeDurationMinutes('')).toBeNull()
@@ -55,8 +54,8 @@ describe('test updateIndividualOffer::serializers', () => {
   describe('test serializePatchOffer', () => {
     let formValues: IOfferIndividualFormValues
     let patchBody: PatchOfferBodyModel
-    const durationDate = new Date()
-    durationDate.setHours(2)
+    const durationMinutes = new Date()
+    durationMinutes.setHours(2, 0, 0, 0)
     beforeEach(() => {
       formValues = {
         isEvent: false,
@@ -88,7 +87,7 @@ describe('test updateIndividualOffer::serializers', () => {
         speaker: 'test speaker',
         stageDirector: 'test stageDirector',
         visa: 'test visa',
-        durationMinutes: durationDate,
+        durationMinutes: durationMinutes,
         receiveNotificationEmails: true,
         bookingEmail: 'booking@email.org',
         isDuo: false,
