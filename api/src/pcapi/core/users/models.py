@@ -12,12 +12,9 @@ from uuid import UUID
 import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
-from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.functions import func
 
 from pcapi import settings
@@ -37,6 +34,9 @@ if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import Deposit
     from pcapi.core.finance.models import DepositType
     from pcapi.core.offerers.models import UserOfferer
+    from pcapi.utils.typing import hybrid_property
+else:
+    from sqlalchemy.ext.hybrid import hybrid_property
 
 
 VOID_FIRST_NAME = ""
@@ -470,8 +470,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def is_beneficiary(self) -> bool:
         return self.has_beneficiary_role or self.has_underage_beneficiary_role
 
-    @is_beneficiary.expression  # type: ignore [no-redef]
-    def is_beneficiary(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @is_beneficiary.expression
+    def is_beneficiary(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return expression.or_(
             cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
         )
@@ -489,14 +489,14 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def phoneNumber(self) -> str | None:
         return self._phoneNumber
 
-    @phoneNumber.setter  # type: ignore [no-redef]
+    @phoneNumber.setter
     def phoneNumber(self, value: str | None) -> None:
         if not value:
             self._phoneNumber = None
         else:
             self._phoneNumber = ParsedPhoneNumber(value).phone_number
 
-    @phoneNumber.expression  # type: ignore [no-redef]
+    @phoneNumber.expression
     def phoneNumber(cls) -> str | None:  # pylint: disable=no-self-argument
         return cls._phoneNumber
 
@@ -504,15 +504,15 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def is_phone_validated(self) -> bool:
         return self.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
-    @is_phone_validated.expression  # type: ignore [no-redef]
-    def is_phone_validated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    @is_phone_validated.expression
+    def is_phone_validated(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
     @hybrid_property
     def is_phone_validation_skipped(self) -> bool:
         return self.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
-    @is_phone_validation_skipped.expression  # type: ignore [no-redef]
+    @is_phone_validation_skipped.expression
     def is_phone_validation_skipped(cls):  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
@@ -520,40 +520,40 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def has_admin_role(self) -> bool:
         return UserRole.ADMIN in self.roles if self.roles else False
 
-    @has_admin_role.expression  # type: ignore [no-redef]
-    def has_admin_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @has_admin_role.expression
+    def has_admin_role(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.ADMIN])
 
     @hybrid_property
     def has_beneficiary_role(self) -> bool:
         return UserRole.BENEFICIARY in self.roles if self.roles else False
 
-    @has_beneficiary_role.expression  # type: ignore [no-redef]
-    def has_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @has_beneficiary_role.expression
+    def has_beneficiary_role(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.BENEFICIARY])
 
     @hybrid_property
     def has_pro_role(self) -> bool:
         return UserRole.PRO in self.roles if self.roles else False
 
-    @has_pro_role.expression  # type: ignore [no-redef]
-    def has_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @has_pro_role.expression
+    def has_pro_role(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.PRO])
 
     @hybrid_property
     def has_underage_beneficiary_role(self) -> bool:
         return UserRole.UNDERAGE_BENEFICIARY in self.roles if self.roles else False
 
-    @has_underage_beneficiary_role.expression  # type: ignore [no-redef]
-    def has_underage_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @has_underage_beneficiary_role.expression
+    def has_underage_beneficiary_role(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
 
     @hybrid_property
     def has_test_role(self) -> bool:
         return UserRole.TEST in self.roles if self.roles else False
 
-    @has_test_role.expression  # type: ignore [no-redef]
-    def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @has_test_role.expression
+    def has_test_role(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.TEST])
 
 
@@ -664,7 +664,7 @@ class UserEmailHistory(PcObject, Base, Model):
     def oldEmail(self) -> str:
         return f"{self.oldUserEmail}@{self.oldDomainEmail}"
 
-    @oldEmail.expression  # type: ignore [no-redef]
+    @oldEmail.expression
     def oldEmail(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return func.concat(cls.oldUserEmail, "@", cls.oldDomainEmail)
 
@@ -672,7 +672,7 @@ class UserEmailHistory(PcObject, Base, Model):
     def newEmail(self) -> str:
         return f"{self.newUserEmail}@{self.newDomainEmail}"
 
-    @newEmail.expression  # type: ignore [no-redef]
+    @newEmail.expression
     def newEmail(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
 

@@ -24,7 +24,6 @@ import sqlalchemy.dialects.postgresql as sa_psql
 from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
@@ -71,6 +70,9 @@ if typing.TYPE_CHECKING:
     import pcapi.core.criteria.models as criteria_models
     import pcapi.core.providers.models as providers_models
     import pcapi.core.users.models as users_models
+    from pcapi.utils.typing import hybrid_property
+else:
+    from sqlalchemy.ext.hybrid import hybrid_property
 
 
 logger = logging.getLogger(__name__)
@@ -407,7 +409,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
             return get_postal_code_timezone(self.managingOfferer.postalCode)
         return get_department_timezone(self.departementCode)
 
-    @timezone.expression  # type: ignore [no-redef]
+    @timezone.expression
     def timezone(cls) -> Case:  # pylint: disable=no-self-argument
         offerer_alias = aliased(Offerer)
         return case(
@@ -652,7 +654,7 @@ class Offerer(
     def departementCode(self) -> str:
         return postal_code_utils.PostalCode(self.postalCode).get_departement_code()
 
-    @departementCode.expression  # type: ignore [no-redef]
+    @departementCode.expression
     def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
         return case(
             [
@@ -690,8 +692,8 @@ class Offerer(
             self.validationStatus is None and self.validationToken is None
         ) or self.validationStatus == ValidationStatus.VALIDATED
 
-    @isValidated.expression  # type: ignore [no-redef]
-    def isValidated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    @isValidated.expression
+    def isValidated(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         # Keep compatibility with validation by token until production data has been migrated
         # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
         return sa.or_(
@@ -707,8 +709,8 @@ class Offerer(
             ValidationStatus.PENDING,
         )
 
-    @isWaitingForValidation.expression  # type: ignore [no-redef]
-    def isWaitingForValidation(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    @isWaitingForValidation.expression
+    def isWaitingForValidation(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
         return sa.or_(
             sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_not(None)),
@@ -758,7 +760,7 @@ class Offerer(
             default=self.dateCreated,
         )
 
-    @requestDate.expression  # type: ignore [no-redef]
+    @requestDate.expression
     def requestDate(cls) -> datetime:  # pylint: disable=no-self-argument
         return sa.select(
             sa.func.coalesce(

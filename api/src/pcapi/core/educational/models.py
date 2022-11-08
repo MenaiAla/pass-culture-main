@@ -5,7 +5,6 @@ import typing
 
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
@@ -37,6 +36,9 @@ from pcapi.utils.image_conversion import standardize_image
 if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
+    from pcapi.utils.typing import hybrid_property
+else:
+    from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class StudentLevels(enum.Enum):
@@ -93,12 +95,12 @@ class HasImageMixin:
     # Whether or not we also stored the original image in the storage bucket.
     imageHasOriginal = sa.Column(sa.Boolean, nullable=True)
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasImage(self) -> bool:
         return self.imageCrop is not None
 
-    @hasImage.expression  # type: ignore[no-redef]
-    def hasImage(cls) -> bool:  # pylint: disable=no-self-argument
+    @hasImage.expression
+    def hasImage(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return cls.imageCrop != None
 
     def _get_image_storage_id(self, original: bool = False) -> str:
@@ -253,7 +255,7 @@ class CollectiveOffer(
 
         return is_editable
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isSoldOut(self) -> bool:
         if self.collectiveStock:
             return self.collectiveStock.isSoldOut
@@ -291,13 +293,13 @@ class CollectiveOffer(
             return self.collectiveStock.hasBookingLimitDatetimePassed  # type: ignore[return-value]
         return False
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if not self.collectiveStock:
             return False
         return self.collectiveStock.hasBookingLimitDatetimePassed
 
-    @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
+    @hasBookingLimitDatetimesPassed.expression
     def hasBookingLimitDatetimesPassed(cls) -> Exists:  # pylint: disable=no-self-argument
         return (
             sa.exists()
@@ -311,11 +313,11 @@ class CollectiveOffer(
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
-    @isEvent.expression  # type: ignore [no-redef]
+    @isEvent.expression
     def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
@@ -392,7 +394,7 @@ class CollectiveOfferTemplate(
     def isEditable(self) -> bool:
         return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         # this property is here for compatibility reasons
         return False
@@ -402,7 +404,7 @@ class CollectiveOfferTemplate(
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isSoldOut(self) -> bool:
         # this property is here for compatibility reasons
         return False
@@ -429,7 +431,7 @@ class CollectiveOfferTemplate(
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer template {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
@@ -525,15 +527,15 @@ class CollectiveStock(PcObject, Base, Model):
                 return False
         return self.collectiveOffer.isEditable
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
         return self.bookingLimitDatetime <= datetime.utcnow()
 
-    @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
+    @hasBookingLimitDatetimePassed.expression
     def hasBookingLimitDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.bookingLimitDatetime <= sa.func.now()
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isEventExpired(self) -> bool:  # todo rewrite
         return self.beginningDatetime <= datetime.utcnow()
 

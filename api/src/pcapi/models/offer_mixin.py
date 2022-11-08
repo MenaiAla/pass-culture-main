@@ -1,9 +1,15 @@
 import enum
+import typing
 
 import sqlalchemy as sa
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import declarative_mixin
 from sqlalchemy.sql.elements import Case
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.utils.typing import hybrid_property
+else:
+    from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class OfferStatus(enum.Enum):
@@ -58,7 +64,7 @@ class StatusMixin:
 
         return OfferStatus.ACTIVE
 
-    @status.expression  # type: ignore [no-redef]
+    @status.expression
     def status(cls) -> Case:  # pylint: disable=no-self-argument
         return sa.case(
             [

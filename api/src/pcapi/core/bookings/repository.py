@@ -173,7 +173,7 @@ def token_exists(token: str) -> bool:
 def find_used_by_token(token: str) -> Booking:
     return Booking.query.filter(
         Booking.token == token.upper(),
-        Booking.is_used_or_reimbursed.is_(True),  # type: ignore [attr-defined]
+        Booking.is_used_or_reimbursed.is_(True),
     ).one_or_none()
 
 
@@ -298,7 +298,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
             ),
             and_(
                 Booking.status == BookingStatus.CONFIRMED,
-                Booking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+                Booking.isConfirmed.is_(False),
             ),
         ),
     )
