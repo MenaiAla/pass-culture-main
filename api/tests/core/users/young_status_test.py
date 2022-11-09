@@ -129,6 +129,19 @@ class YoungStatusTest:
                 subscription_status=young_status.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
             )
 
+        def should_have_to_complete_subscription_when_one_step_is_pending_and_another_is_todo(self):
+            user = users_factories.UserFactory(dateOfBirth=_with_age(18))
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                type=fraud_models.FraudCheckType.UBBLE,
+                user=user,
+                status=fraud_models.FraudCheckStatus.PENDING,
+            )
+
+            assert (
+                young_status.young_status(user).subscription_status
+                == young_status.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
+            )
+
     def should_be_non_eligible_when_too_young(self):
         user = users_factories.UserFactory(dateOfBirth=_with_age(15) + relativedelta(days=1))
         assert young_status.young_status(user) == young_status.NonEligible()
