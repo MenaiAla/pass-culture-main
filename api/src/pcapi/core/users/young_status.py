@@ -64,19 +64,10 @@ def young_status(user: models.User) -> YoungStatus:
         return Beneficiary()
 
     if user.eligibility is not None:
-        new_var = subscription_api.get_identity_check_subscription_status(user, user.eligibility)
-        print("")
-        print("")
-        print("")
-        print("")
-        print(new_var)
-        print("")
-        print("")
-        print("")
-        print("")
-        print("")
-        print("")
-        if new_var == subscription_models.SubscriptionItemStatus.PENDING:
+        if (
+            subscription_api.get_identity_check_subscription_status(user, user.eligibility)
+            == subscription_models.SubscriptionItemStatus.PENDING
+        ):
             return Eligible(subscription_status=SubscriptionStatus.HAS_SUBSCRIPTION_PENDING)
 
         if subscription_api.has_subscription_fixable_issues(user):
