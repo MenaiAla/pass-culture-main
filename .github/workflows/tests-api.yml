@@ -180,6 +180,9 @@ jobs:
           run: |
             # Synchronize these globs with `python_files` in `pytest.ini`
             TEST_FILES=$(ls tests/**/*test.py tests/**/test*.py)
+            echo $TEST_FILES
+            echo "\n======================\n"
+            pytest --collect-only $TEST_FILES 
             mkdir -p test-results
             pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml
       - name: Slack Notification
