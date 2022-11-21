@@ -1,90 +1,82 @@
-<div class="row row-cols-1 g-4 py-3">
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
+{% set active_tab = active_tab if active_tab else 'history' %}
 
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button
-                            class="nav-link"
-                            id="history-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#history-tab-pane"
-                            type="button"
-                            role="tab"
-                            aria-controls="history-tab-pane"
-                            aria-selected="true"
-                        >
-                            Historique du compte
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button
-                            class="nav-link active"
-                            id="personal-information-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#personal-information-tab-pane"
-                            type="button"
-                            role="tab"
-                            aria-controls="personal-information-tab-pane"
-                            aria-selected="false"
-                        >
-                            Informations personnelles
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button
-                            class="nav-link"
-                            id="bookings-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#bookings-tab-pane"
-                            type="button"
-                            role="tab"
-                            aria-controls="bookings-tab-pane"
-                            aria-selected="false"
-                        >
-                            Suivi des réservations
-                        </button>
-                    </li>
-                </ul>
+<ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button
+            class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'history' else '' }}"
+            id="history-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#history-tab-pane"
+            type="button"
+            role="tab"
+            aria-controls="history-tab-pane"
+            aria-selected="true"
+        >
+            HISTORIQUE DU COMPTE
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button
+            class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'personal-information' else '' }}"
+            id="personal-information-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#personal-information-tab-pane"
+            type="button"
+            role="tab"
+            aria-controls="personal-information-tab-pane"
+            aria-selected="false"
+        >
+            INFORMATIONS PERSONNELLES
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button
+            class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'bookings' else '' }}"
+            id="bookings-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#bookings-tab-pane"
+            type="button"
+            role="tab"
+            aria-controls="bookings-tab-pane"
+            aria-selected="false"
+        >
+            SUIVI DES RÉSERVATIONS
+        </button>
+    </li>
+</ul>
 
-                <div class="tab-content" id="myTabContent">
-                    <div
-                        class="tab-pane fade"
-                        id="history-tab-pane"
-                        role="tabpanel"
-                        aria-labelledby="history-tab"
-                        tabindex="0"
-                    >
-                        {% include "accounts/get/details/history.html" %}
-                    </div>
+<div class="tab-content bg-body border border-top-0" id="myTabContent">
+    <div
+        class="tab-pane fade p-4 {{ 'show active' if active_tab == 'history' else '' }}"
+        id="history-tab-pane"
+        role="tabpanel"
+        aria-labelledby="history-tab"
+        tabindex="0"
+    >
+        {% include "accounts/get/details/history.html" %}
+    </div>
 
-                    <div
-                        class="tab-pane fade show active"
-                        id="personal-information-tab-pane"
-                        role="tabpanel"
-                        aria-labelledby="personal-information-tab"
-                        tabindex="0"
-                    >
-                        {% include "accounts/get/details/personal_information_bookmarks.html" %}
-                        {% include "accounts/get/details/personal_information_user_details.html" %}
-                        {% for history_type, history in eligibility_history.items() %}
-                            {% include "accounts/get/details/personal_information_registration.html" %}
-                        {% endfor %}
-                    </div>
+    <div
+        class="tab-pane fade p-4 {{ 'show active' if active_tab == 'personal-information' else '' }}"
+        id="personal-information-tab-pane"
+        role="tabpanel"
+        aria-labelledby="personal-information-tab"
+        tabindex="0"
+    >
+        {% include "accounts/get/details/personal_information_bookmarks.html" %}
+        {% include "accounts/get/details/personal_information_user_details.html" %}
+        {% for history_type, history in eligibility_history.items() %}
+            {% include "accounts/get/details/personal_information_registration.html" %}
+        {% endfor %}
+    </div>
 
-                    <div
-                        class="tab-pane fade"
-                        id="bookings-tab-pane"
-                        role="tabpanel"
-                        aria-labelledby="bookings-tab"
-                        tabindex="0"
-                    >
-                        ...
-                    </div>
-                </div>
-
-            </div>
-        </div>
+    <div
+        class="tab-pane fade {{ 'show active' if active_tab == 'bookings' else '' }}"
+        id="bookings-tab-pane"
+        role="tabpanel"
+        aria-labelledby="bookings-tab"
+        tabindex="0"
+    >
+        ...
     </div>
 </div>
