@@ -39,7 +39,6 @@ import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
-from pcapi.domain import admin_emails
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models import feature
@@ -584,8 +583,6 @@ def publish_offer(offer: models.Offer, user: User | None) -> models.Offer:
 def update_offer_fraud_information(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer,
     user: User | None,
-    *,
-    silent: bool = False,
 ) -> None:
     venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
 
@@ -599,9 +596,6 @@ def update_offer_fraud_information(
         offer.isActive = False
 
     db.session.add(offer)
-
-    if offer.validation == models.OfferValidationStatus.APPROVED and not silent:
-        admin_emails.send_offer_creation_notification_to_administration(offer)
 
     if (
         offer.validation == models.OfferValidationStatus.APPROVED
