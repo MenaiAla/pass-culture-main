@@ -1,3 +1,6 @@
+import threading
+
+from pcapi.flask_app import app
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import (
     create_industrial_activation_offers,
 )
@@ -40,69 +43,88 @@ from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import 
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
+class MyThread(threading.Thread):
+    def __init__(self, name, threaded_function) -> None:
+        threading.Thread.__init__(self)
+        self.name = name
+        self.threaded_function = threaded_function
+
+    def run(self) -> None:
+        with app.app_context():
+            self.threaded_function()
+
+
 def save_industrial_sandbox() -> None:
-    venue_types = create_industrial_venue_types()
-    (offerers_by_name, pro_users_by_name) = create_industrial_offerers_with_pro_users()
+    def first_runed_creators() -> None:
+        create_venue_labels(sandbox=True)
 
-    admin_users_by_name = create_industrial_admin_users()
-    pro_users_by_name = create_industrial_pro_users(offerers_by_name)
-    app_users_by_name = create_industrial_app_users()
+    def dependant_creators() -> None:
+        app_users_by_name = create_industrial_app_users()
 
-    users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **app_users_by_name)
+        admin_users_by_name = create_industrial_admin_users()
 
-    venues_by_name = create_industrial_venues(offerers_by_name, venue_types)
+        offerers_by_name = create_industrial_offerers_with_pro_users()
 
-    event_products_by_name = create_industrial_event_products()
+        pro_users_by_name = create_industrial_pro_users(offerers_by_name)
 
-    thing_products_by_name = create_industrial_thing_products()
+        users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **app_users_by_name)
 
-    event_offers_by_name = create_industrial_event_offers(event_products_by_name, offerers_by_name)
+        venue_types = create_industrial_venue_types()
 
-    thing_offers_by_name = create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
+        venues_by_name = create_industrial_venues(offerers_by_name, venue_types)
 
-    create_industrial_draft_offers(offerers_by_name)
+        event_products_by_name = create_industrial_event_products()
 
-    create_industrial_offers_with_activation_codes()
+        thing_products_by_name = create_industrial_thing_products()
 
-    offers_by_name = dict(event_offers_by_name, **thing_offers_by_name)
+        event_offers_by_name = create_industrial_event_offers(event_products_by_name, offerers_by_name)
 
-    event_occurrences_by_name = create_industrial_event_occurrences(event_offers_by_name)
+        thing_offers_by_name = create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
 
-    create_industrial_event_stocks(event_occurrences_by_name)
+        create_industrial_draft_offers(offerers_by_name)
 
-    create_industrial_thing_stocks(thing_offers_by_name)
+        offers_by_name = dict(event_offers_by_name, **thing_offers_by_name)
 
-    prepare_mediations_folders()
-    create_industrial_mediations(offers_by_name)
+        event_occurrences_by_name = create_industrial_event_occurrences(event_offers_by_name)
 
-    criteria_by_name = create_industrial_criteria()
+        create_industrial_event_stocks(event_occurrences_by_name)
 
-    associate_criterion_to_one_offer_with_mediation(offers_by_name, criteria_by_name)
+        create_industrial_thing_stocks(thing_offers_by_name)
 
-    create_industrial_bookings(offers_by_name, users_by_name)
+        prepare_mediations_folders()
+        create_industrial_mediations(offers_by_name)
 
-    create_venue_labels(sandbox=True)
+        criteria_by_name = create_industrial_criteria()
 
-    create_industrial_educational_bookings()
+        associate_criterion_to_one_offer_with_mediation(offers_by_name, criteria_by_name)
 
-    # Now that they booked, we can expire these users' deposit.
-    for name, user in users_by_name.items():
-        if "has-booked-some-but-deposit-expired" in name:
-            assert user.deposit  # helps mypy
-            user.deposit.expirationDate = datetime.utcnow()
-            repository.save(user.deposit)
+        create_industrial_bookings(offers_by_name, users_by_name)
 
-    create_industrial_invoices()
-    create_specific_invoice()
+        create_industrial_pro_users_api_keys(offerers_by_name)
 
-    create_industrial_pro_users_api_keys(offerers_by_name)
+        # Now that they booked, we can expire these users' deposit.
+        for name, user in users_by_name.items():
+            if "has-booked-some-but-deposit-expired" in name:
+                assert user.deposit  # helps mypy
+                user.deposit.expirationDate = datetime.utcnow()
+                repository.save(user.deposit)
+        create_industrial_activation_offers()
 
-    create_industrial_activation_offers()
+    first_runed_creators()
 
-    create_industrial_search_indexed_objects()
-
-    create_industrial_offer_validation_config()
-
-    create_industrial_cinema_external_bookings()
+    sandbox_functions = {
+        dependant_creators,
+        create_industrial_offers_with_activation_codes,
+        create_industrial_invoices,
+        create_specific_invoice,
+        create_industrial_search_indexed_objects,
+        create_industrial_offer_validation_config,
+        create_roles_with_permissions,
+        create_industrial_educational_bookings,
+        create_industrial_cinema_external_bookings,
+    }
 
     create_roles_with_permissions()
+    for function in sandbox_functions:
+        thread = MyThread(function.__name__, function)
+        thread.start()

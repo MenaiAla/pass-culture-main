@@ -281,4 +281,4 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
 
     logger.info("created %d offerers with pro users", len(offerers_by_name))
 
-    return offerers_by_name, users_by_name
+    return offerers_by_name

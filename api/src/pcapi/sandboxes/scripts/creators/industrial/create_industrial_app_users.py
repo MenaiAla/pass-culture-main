@@ -8,7 +8,6 @@ import uuid
 
 from dateutil.relativedelta import relativedelta
 from faker import Faker
-from freezegun import freeze_time
 
 from pcapi.core.bookings import factories as bookings_factory
 import pcapi.core.finance.conf as finance_conf
@@ -262,47 +261,47 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             needsToFillCulturalSurvey=False,
         )
     )
-    with freeze_time(datetime.utcnow() - relativedelta(years=3)):
-        users.append(
-            users_factories.UnderageBeneficiaryFactory(
-                email="exunderage_18@example.com",
-                dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
-                subscription_age=15,
-                firstName=fake.first_name(),
-                lastName=fake.last_name(),
-                needsToFillCulturalSurvey=False,
-            )
-        )
-
-        beneficiary_and_exunderage = users_factories.UnderageBeneficiaryFactory(
-            email="bene_18_exunderage@example.com",
-            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
+    three_years_ago = datetime.today() - relativedelta(years=3)
+    users.append(
+        users_factories.UnderageBeneficiaryFactory(
+            email="exunderage_18@example.com",
+            dateOfBirth=datetime.combine(three_years_ago, time(0, 0)) - relativedelta(years=15, months=5),
             subscription_age=15,
             firstName=fake.first_name(),
             lastName=fake.last_name(),
             needsToFillCulturalSurvey=False,
         )
-        db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
-        bookings_factory.IndividualBookingFactory(individualBooking__user=beneficiary_and_exunderage)
-        db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+    )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
+    beneficiary_and_exunderage = users_factories.UnderageBeneficiaryFactory(
+        email="bene_18_exunderage@example.com",
+        dateOfBirth=datetime.combine(three_years_ago, time(0, 0)) - relativedelta(years=15, months=5),
+        subscription_age=15,
+        firstName=fake.first_name(),
+        lastName=fake.last_name(),
+        needsToFillCulturalSurvey=False,
+    )
+    db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+    bookings_factory.IndividualBookingFactory(individualBooking__user=beneficiary_and_exunderage)
+    db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+
+    fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
     users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)
     beneficiary_and_exunderage.add_beneficiary_role()
     beneficiary_and_exunderage.remove_underage_beneficiary_role()
     users.append(beneficiary_and_exunderage)
 
-    with freeze_time(datetime.utcnow() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)):
-        users.append(
-            users_factories.BeneficiaryGrant18Factory(
-                email="exbene_20@example.com",
-                dateOfBirth=datetime.combine(date.today(), time(0, 0))
-                - relativedelta(years=ELIGIBILITY_AGE_18, months=5),
-                firstName=fake.first_name(),
-                lastName=fake.last_name(),
-                needsToFillCulturalSurvey=False,
-            )
+    still_eligible_date = datetime.today() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)
+    users.append(
+        users_factories.BeneficiaryGrant18Factory(
+            email="exbene_20@example.com",
+            dateOfBirth=datetime.combine(still_eligible_date, time(0, 0))
+            - relativedelta(years=ELIGIBILITY_AGE_18, months=5),
+            firstName=fake.first_name(),
+            lastName=fake.last_name(),
+            needsToFillCulturalSurvey=False,
         )
+    )
 
     user_by_email = {}
     for user in users:
