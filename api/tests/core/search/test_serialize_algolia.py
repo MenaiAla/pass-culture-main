@@ -4,6 +4,7 @@ import decimal
 import pytest
 
 from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
@@ -58,6 +59,7 @@ def test_serialize_offer():
             "movieGenres": None,
             "musicType": None,
             "name": "Titre formidable",
+            "nativeCategory": subcategories_v2.NativeCategory.LIVRES_PAPIER.name,
             "prices": [decimal.Decimal("10.00")],
             "rankingWeight": 2,
             "searchGroupName": "LIVRE",
