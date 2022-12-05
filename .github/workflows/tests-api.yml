@@ -182,10 +182,18 @@ jobs:
         with:
           image: ${{ env.tests_docker_image }}
           shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e PY_COLORS
+          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e PY_COLORS --user 0:0
           run: |
-            mkdir -p test-results
-            pytest --durations=10 --junitxml=test-results/junit.xml
+            su -c "mkdir -p /home/pcapi/test-results" pcapi
+            su -c "pytest --durations=10 --junitxml=/home/pcapi/test-results/junit.xml" pcapi
+            mkdir -p /github/workspace/test-results/
+            cp /home/pcapi/test-results/junit.xml /github/workspace/test-results/junit.xml
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: 'test-results/junit.xml'
+          detailed_summary: true
       - name: Slack Notification
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: rtCamp/action-slack-notify@v2
