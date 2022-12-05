@@ -3,6 +3,7 @@ on: workflow_call
 env:
   region: europe-west1
   tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}
+  PY_COLORS: "1"
 
 defaults:
   run:
@@ -54,26 +55,31 @@ jobs:
       - name: Show installed Python packages
         uses: addnab/docker-run-action@v3
         with:
+          options: -e PY_COLORS
           image: ${{ env.tests_docker_image }}
           run: pip freeze
       - name: Check imports are well organized with isort
         uses: addnab/docker-run-action@v3
         with:
+          options: -e PY_COLORS
           image: ${{ env.tests_docker_image }}
           run: isort . --check-only
       - name: Check code is well formatted with black
         uses: addnab/docker-run-action@v3
         with:
+          options: -e PY_COLORS
           image: ${{ env.tests_docker_image }}
           run: black . --check
       - name: Run pylint
         uses: addnab/docker-run-action@v3
         with:
+          options: -e PY_COLORS
           image: ${{ env.tests_docker_image }}
           run: pylint src tests --jobs=2
       - name: Run mypy
         uses: addnab/docker-run-action@v3
         with:
+          options: -e PY_COLORS
           image: ${{ env.tests_docker_image }}
           run: mypy src
       - name: Slack Notification
@@ -150,7 +156,7 @@ jobs:
         with:
           image: ${{ env.tests_docker_image }}
           shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST
+          options: -e RUN_ENV -e DATABASE_URL_TEST -e PY_COLORS
           run: |
             set -e
             flask install_postgres_extensions
@@ -164,7 +170,7 @@ jobs:
         with:
           image: ${{ env.tests_docker_image }}
           shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST
+          options: -e RUN_ENV -e DATABASE_URL_TEST -e PY_COLORS
           run: |
             set -e
             alembic downgrade post@head-10
@@ -176,7 +182,7 @@ jobs:
         with:
           image: ${{ env.tests_docker_image }}
           shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL
+          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e PY_COLORS
           run: |
             mkdir -p test-results
             pytest --durations=10 --junitxml=test-results/junit.xml
