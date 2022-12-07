@@ -211,7 +211,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     venueType: sa_orm.Mapped["VenueType"] = relationship("VenueType", foreign_keys=[venueTypeId])
 
-    venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)
+    venueTypeCode: VenueTypeCode = Column(
+        sa.Enum(VenueTypeCode, create_constraint=False), nullable=False, default=VenueTypeCode.OTHER
+    )
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 

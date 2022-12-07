@@ -202,7 +202,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     reimbursementPointId: int | None
     siret: str | None
     venueLabelId: str | None
-    venueTypeCode: offerers_models.VenueTypeCode | None
+    venueTypeCode: offerers_models.VenueTypeCode
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
     collectiveWebsite: str | None
@@ -299,7 +299,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     city: base.VenueCity | None
     publicName: base.VenuePublicName | None
     comment: str | None
-    venueTypeCode: str | None
+    venueTypeCode: str
     venueLabelId: int | None
     withdrawalDetails: str | None
     isAccessibilityAppliedOnAllOffers: bool | None
