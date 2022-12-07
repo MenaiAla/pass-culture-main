@@ -26,7 +26,7 @@ export type EditVenueBodyModel = {
   reimbursementPointId?: number | null;
   siret?: string | null;
   venueLabelId?: number | null;
-  venueTypeCode?: string | null;
+  venueTypeCode: string;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };
