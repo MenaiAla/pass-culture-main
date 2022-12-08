@@ -1,0 +1,47 @@
+on: push
+
+jobs:
+  auth:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      token_part1: ${{ steps.output-token-parts.outputs.token_part1 }}
+      token_part2: ${{ steps.output-token-parts.outputs.token_part2 }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v0'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - id: output-token-parts
+        run: |
+          ACCESS_TOKEN="${{ steps.openid-auth.outputs.access_token }}"
+          echo "token_part1=$(echo ${ACCESS_TOKEN:0:1})" >> $GITHUB_OUTPUT
+          echo "token_part2=$(echo ${ACCESS_TOKEN:1})" >> $GITHUB_OUTPUT
+
+  docker-job:
+    needs: auth
+    runs-on: ubuntu-latest
+    container:
+      image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:6bbb56f5cba036eb8a01c777440cc2c94dbc357b
+      credentials:
+        username: oauth2accesstoken
+        password: ${{ needs.auth.outputs.token_part1 }}${{ needs.auth.outputs.token_part2 }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: docker://alpine:3
+        with:
+          entrypoint: /bin/sh
+          args: -c "mkdir /github/home/report && chown 1000:1000 /github/home/report"
+      - run: |
+          ls -l /github/home
+          touch /github/home/report/test
+          ls -la /github/home/report/
