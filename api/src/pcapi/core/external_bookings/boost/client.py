@@ -1,3 +1,5 @@
+from datetime import date
+from datetime import timedelta
 import logging
 import typing
 
@@ -84,14 +86,20 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         resource: boost.ResourceBoost,
         collection_class: typing.Type[boost_serializers.Collection],
         per_page: int = 30,
+        pattern_values: dict[str, typing.Any] | None = None,
+        params: dict[str, typing.Any] | None = None,
     ) -> list:
         # XXX: per_page max value seems to be 200
         items = []
         current_page = next_page = 1
 
         while current_page <= next_page:
-            params = {"page": current_page, "per_page": per_page}
-            json_data = boost.get_resource(self.cinema_str_id, resource, params=params)
+            if params:
+                params["page"] = current_page
+                params["per_page"] = per_page
+            else:
+                params = {"page": current_page, "per_page": per_page}
+            json_data = boost.get_resource(self.cinema_str_id, resource, params=params, pattern_values=pattern_values)
             collection = parse_obj_as(collection_class, json_data)
             items.extend(collection.data)
             total_pages = collection.totalPages
@@ -110,11 +118,19 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
         return [film.to_generic_movie() for film in films]
 
-    def get_showtimes(self, per_page: int = 30) -> list[boost_serializers.ShowTime3]:
+    def get_showtimes(
+        self, per_page: int = 30, start_date: date = date.today(), interval_days: int = 30, film: int | None = None
+    ) -> list[boost_serializers.ShowTime4]:
+        pattern_values = {
+            "dateStart": start_date.strftime("%Y-%m-%d"),
+            "dateEnd": (start_date + timedelta(days=interval_days)).strftime("%Y-%m-%d"),
+        }
         return self.get_collection_items(
             resource=boost.ResourceBoost.SHOWTIMES,
             collection_class=boost_serializers.ShowTimeCollection,
             per_page=per_page,
+            pattern_values=pattern_values,
+            params={"film": film} if film else None,
         )
 
     def get_showtime_remaining_online_seats(self, showtime_id: int) -> int:
