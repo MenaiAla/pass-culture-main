@@ -182,7 +182,6 @@ class YoungStatusTest:
         )
 
     # [ ] Ubble ID_CHECK_UNPROCESSABLE -> has_subscription_issues
-
     def should_have_subscription_issues_when_id_check_unprocessable(self):
         user = users_factories.UserFactory(dateOfBirth=_with_age(15))
 
