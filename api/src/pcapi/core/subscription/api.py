@@ -740,6 +740,7 @@ def has_subscription_fixable_issues(user: users_models.User) -> bool:
         == models.SubscriptionItemStatus.KO
     ):
         return True
+    print(get_identity_check_subscription_status(user, user.eligibility))
 
     return get_identity_check_subscription_status(user, user.eligibility) in [
         models.SubscriptionItemStatus.SUSPICIOUS,

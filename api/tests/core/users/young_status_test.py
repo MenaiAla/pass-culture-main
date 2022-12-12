@@ -159,3 +159,47 @@ class YoungStatusTest:
         status = young_status.Suspended()
         with pytest.raises(attrs.exceptions.FrozenInstanceError):
             status.status_type = young_status.YoungStatusType.BENEFICIARY
+
+    def should_have_to_complete_subscription_when_duplicate_ine(self):
+        user = users_factories.UserFactory(dateOfBirth=_with_age(15))
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            user=user,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_INE],
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            user=user,
+        )
+
+        assert young_status.young_status(user) == young_status.Eligible(
+            subscription_status=young_status.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
+        )
+
+    # [ ] Ubble ID_CHECK_UNPROCESSABLE -> has_subscription_issues
+
+    def should_have_subscription_issues_when_id_check_unprocessable(self):
+        user = users_factories.UserFactory(dateOfBirth=_with_age(15))
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            user=user,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_INE],
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            user=user,
+        )
+
+        assert young_status.young_status(user) == young_status.Eligible(
+            subscription_status=young_status.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
+        )
