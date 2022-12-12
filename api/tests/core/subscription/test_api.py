@@ -1896,7 +1896,7 @@ class HasCompletedProfileTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class HasSubscriptionIssuesTest:
+class HasSubscriptionFixableIssuesTest:
     def should_have_subscription_issues_when_dms_has_errors(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1918,11 +1918,11 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is True
+        assert subscription_api.has_subscription_fixable_issues(user) is True
 
     def should_not_have_issues_when_user_is_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        assert subscription_api.has_subscription_issues(user) is False
+        assert subscription_api.has_subscription_fixable_issues(user) is False
 
     def should_not_have_issues_when_successfully_completed_all_steps(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
@@ -1944,7 +1944,7 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is False
+        assert subscription_api.has_subscription_fixable_issues(user) is False
 
     def should_have_issues_when_dms_check_is_ko(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
@@ -1967,7 +1967,7 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is True
+        assert subscription_api.has_subscription_fixable_issues(user) is True
 
     def should_have_issues_when_ubble_has_non_retryable_errors(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
@@ -1990,7 +1990,7 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is True
+        assert subscription_api.has_subscription_fixable_issues(user) is True
 
     def should_not_have_issues_when_ubble_has_retryable_error(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
@@ -2013,7 +2013,7 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is False
+        assert subscription_api.has_subscription_fixable_issues(user) is False
 
     def should_never_have_issues_with_educonnect_because_it_is_always_retryable(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
@@ -2036,7 +2036,7 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is False
+        assert subscription_api.has_subscription_fixable_issues(user) is False
 
     @pytest.mark.parametrize(
         "reason_code",
@@ -2055,7 +2055,7 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is True
+        assert subscription_api.has_subscription_fixable_issues(user) is True
 
     def should_not_have_issues_when_phone_unvalidated_by_peer(self) -> None:
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
@@ -2066,7 +2066,7 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is False
+        assert subscription_api.has_subscription_fixable_issues(user) is False
 
     def should_not_have_issues_when_phone_unvalidation_for_peer(self) -> None:
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
@@ -2077,7 +2077,7 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is False
+        assert subscription_api.has_subscription_fixable_issues(user) is False
 
     def should_have_issues_when_has_reached_the_sms_limit(self) -> None:
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
@@ -2088,7 +2088,7 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is True
+        assert subscription_api.has_subscription_fixable_issues(user) is True
 
     def should_not_have_issues_when_issue_has_been_solved(self) -> None:
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
@@ -2107,7 +2107,7 @@ class HasSubscriptionIssuesTest:
         )
         user.phoneNumber = "0612345678"
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        assert subscription_api.has_subscription_issues(user) is False
+        assert subscription_api.has_subscription_fixable_issues(user) is False
 
     def should_have_issues_when_phone_issue_has_been_solved_but_still_have_issue_with_identity_check(self) -> None:
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
@@ -2145,4 +2145,4 @@ class HasSubscriptionIssuesTest:
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             user=user,
         )
-        assert subscription_api.has_subscription_issues(user) is True
+        assert subscription_api.has_subscription_fixable_issues(user) is True

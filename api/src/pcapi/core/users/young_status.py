@@ -70,7 +70,7 @@ def young_status(user: models.User) -> YoungStatus:
         ):
             return Eligible(subscription_status=SubscriptionStatus.HAS_SUBSCRIPTION_PENDING)
 
-        if subscription_api.has_subscription_issues(user):
+        if subscription_api.has_subscription_fixable_issues(user):
             return Eligible(subscription_status=SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES)
 
         if subscription_api.get_next_subscription_step(user) is not None:

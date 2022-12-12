@@ -734,7 +734,7 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
     return None
 
 
-def has_subscription_issues(user: users_models.User) -> bool:
+def has_subscription_fixable_issues(user: users_models.User) -> bool:
     if (
         get_phone_validation_subscription_item(user=user, eligibility=user.eligibility).status
         == models.SubscriptionItemStatus.KO
