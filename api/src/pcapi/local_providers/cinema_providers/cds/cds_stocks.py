@@ -51,13 +51,8 @@ class CDSStocks(LocalProvider):
 
         providable_information_list = []
 
-        # The Product ID must be unique
-        provider_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
         product_providable_info = self.create_providable_info(
-            pc_object=Product,
-            id_at_providers=provider_movie_unique_id,
-            date_modified_at_provider=datetime.utcnow(),
-            new_id_at_provider=provider_movie_unique_id,
+            Product, str(self.movie_information.id), datetime.utcnow(), str(self.movie_information.id)
         )
         providable_information_list.append(product_providable_info)
 
@@ -68,11 +63,9 @@ class CDSStocks(LocalProvider):
         providable_information_list.append(offer_providable_info)
 
         for show in self.filtered_movie_showtimes:  # type: ignore [attr-defined]
-            stock_showtime_unique_id = _build_stock_uuid(
-                self.movie_information.id, self.venue, show["show_information"]
-            )
+            id_at_providers = _build_stock_uuid(self.movie_information.id, self.venue, show["show_information"])
             stock_providable_info = self.create_providable_info(
-                Stock, stock_showtime_unique_id, datetime.utcnow(), stock_showtime_unique_id
+                Stock, id_at_providers, datetime.utcnow(), id_at_providers
             )
             providable_information_list.append(stock_providable_info)
 
@@ -263,8 +256,7 @@ def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str):  # type: ignore [n
 
 
 def _build_movie_uuid(movie_information_id: str, venue: Venue) -> str:
-    """This must be unique, among all Providers and Venues"""
-    return f"{movie_information_id}%{venue.siret}%CDS"
+    return f"{movie_information_id}%{venue.siret}"
 
 
 def _build_showtime_uuid(showtime_details: ShowCDS) -> str:
