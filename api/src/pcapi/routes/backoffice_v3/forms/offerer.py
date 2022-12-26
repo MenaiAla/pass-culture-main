@@ -50,6 +50,8 @@ class UserOffererValidationListForm(FlaskForm):
     class Meta:
         csrf = False
 
+    q = fields.PCOptSearchField("Nom de structure, SIREN, code postal, département, ville, email, nom de compte pro")
+
     tags = fields.PCQuerySelectMultipleField(
         "Tags", query_factory=_get_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
     )
@@ -69,6 +71,13 @@ class UserOffererValidationListForm(FlaskForm):
         default="100",
         validators=(wtforms.validators.Optional(),),
     )
+
+    def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
+        if q.data and q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9):
+            raise wtforms.validators.ValidationError(
+                "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+            )
+        return q
 
 
 class CommentForm(FlaskForm):
