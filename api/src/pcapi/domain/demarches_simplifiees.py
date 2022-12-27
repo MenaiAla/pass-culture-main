@@ -29,6 +29,7 @@ REJECTED_DMS_STATUS = (
     dms_models.DmsApplicationStates.refused,
     dms_models.DmsApplicationStates.without_continuation,
 )
+DMS_TOKEN_PRO_PREFIX = "PRO-"
 
 
 class ApplicationDetail:
@@ -101,12 +102,18 @@ def get_venue_bank_information_application_details_by_application_id(
         iban=data["iban"],
         bic=data["bic"],
         siret=data.get("siret", None),
-        dms_token=data["dms_token"] if procedure_version == 4 else None,
+        dms_token=_remove_dms_pro_prefix(data["dms_token"]) if procedure_version == 4 else None,
         modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
         error_annotation_id=data["error_annotation_id"],
         dossier_id=data["dossier_id"],
         venue_url_annotation_id=data["venue_url_annotation_id"],
     )
+
+
+def _remove_dms_pro_prefix(dms_token: str) -> str:
+    if dms_token.startswith(DMS_TOKEN_PRO_PREFIX):
+        return dms_token[len(DMS_TOKEN_PRO_PREFIX) :]
+    return dms_token
 
 
 def _get_status_from_demarches_simplifiees_application_state_v2(
