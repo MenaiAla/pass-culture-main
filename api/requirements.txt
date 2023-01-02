@@ -72,7 +72,7 @@ types-PyYAML
 types-redis
 types-requests
 types-urllib3
-# Pin weasyprint to keep new versions from changing how our PDF files look.
+# Pin weasyprint to keep new versions from changing how our PDF files look like.
 weasyprint==56.1
 Werkzeug==2.0.3
 WTForms==3.0.1
