@@ -78,6 +78,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
     ENABLE_USER_PROFILING = "Active l'étape USER_PROFILING dans le parcours d'inscription des jeunes de 18 ans"
+    ENABLE_WITHDRAWAL_UPDATED_MAIL = (
+        "Envoie un mail aux jeunes qui ont réservé lorsque les modalités de retrait d'une offre sont changées"
+    )
     ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
     GENERATE_CASHFLOWS_BY_CRON = (
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
@@ -163,6 +166,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_USER_PROFILING,
+    FeatureToggle.ENABLE_WITHDRAWAL_UPDATED_MAIL,
     FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,

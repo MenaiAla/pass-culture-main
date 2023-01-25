@@ -7,6 +7,9 @@ from flask_login import login_required
 from pcapi import repository
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+from pcapi.core.mails.transactional.bookings.booking_withdrawal_updated_by_pro import (
+    send_booking_withdrawal_updated_by_pro,
+)
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -15,6 +18,7 @@ import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -220,10 +224,22 @@ def patch_offer(
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     try:
+        previous_withdrawal_details = offer.withdrawalDetails
+        previous_withdrawal_type = offer.withdrawalType
+        previous_withdrawal_delay = offer.withdrawalDelay
         with repository.transaction():
             offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
     except exceptions.OfferCreationBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
+    else:
+        if FeatureToggle.ENABLE_WITHDRAWAL_UPDATED_MAIL.is_active() and (
+            previous_withdrawal_details != offer.withdrawalDetails
+            or previous_withdrawal_type != offer.withdrawalType
+            or previous_withdrawal_delay != offer.withdrawalDelay
+        ):
+            for stock in offer.stocks:
+                for booking in stock.bookings:
+                    send_booking_withdrawal_updated_by_pro(booking.individualBooking)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 

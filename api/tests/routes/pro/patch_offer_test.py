@@ -1,13 +1,17 @@
 from datetime import datetime
+from operator import attrgetter
+from unittest import mock
 
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
@@ -58,6 +62,26 @@ class Returns200Test:
         offer = Offer.query.get(offer.id)
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
+
+    @override_features(ENABLE_WITHDRAWAL_UPDATED_MAIL=True)
+    def test_withdrawal_update_send_email_to_each_related_booker(self, client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        stock = offers_factories.StockFactory(offer=offer)
+        bookings = [bookings_factories.IndividualBookingFactory(stock=stock).individualBooking for _ in range(3)]
+
+        data = {
+            "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
+            "withdrawalType": "no_ticket",
+        }
+        with mock.patch("pcapi.routes.pro.offers.send_booking_withdrawal_updated_by_pro") as mailer_mock:
+            response = client.with_session_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
+
+        assert response.status_code == 200
+        assert mailer_mock.call_count == 3
+        assert sorted([args[0][0] for args in mailer_mock.call_args_list], key=attrgetter("id")) == sorted(
+            bookings, key=attrgetter("id")
+        )
 
 
 class Returns400Test:

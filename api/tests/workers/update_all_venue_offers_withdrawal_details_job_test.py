@@ -6,7 +6,7 @@ from pcapi.workers.update_all_venue_offers_withdrawal_details_job import update_
 
 
 @pytest.mark.usefixtures("db_session")
-def test_update_all_venue_offers_withdrawal_details_job_test():
+def test_update_all_venue_offers_withdrawal_details_job():
     venue = offerers_factories.VenueFactory()
     offer1 = offers_factories.OfferFactory(venue=venue)
     offer2 = offers_factories.OfferFactory(venue=venue)

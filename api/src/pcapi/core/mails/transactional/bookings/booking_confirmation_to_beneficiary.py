@@ -4,8 +4,8 @@ from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
 from pcapi.core.mails import models
+from pcapi.core.mails.transactional.bookings import common as bookings_common
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -71,18 +71,6 @@ def get_booking_confirmation_to_beneficiary_email_data(
         else None
     )
 
-    booking_token = (
-        individual_booking.booking.activationCode.code
-        if individual_booking.booking.activationCode
-        else individual_booking.booking.token
-    )
-
-    offer_withdrawal_delay_in_days = (
-        format_time_in_second_to_human_readable(individual_booking.booking.stock.offer.withdrawalDelay)
-        if individual_booking.booking.stock.offer.withdrawalDelay
-        else None
-    )
-
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
@@ -90,12 +78,12 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "BOOKING_DATE": formatted_booking_date,
             "BOOKING_HOUR": formatted_booking_time,
             "OFFER_NAME": offer.name,
-            "OFFERER_NAME": venue.managingOfferer.name,
+            "OFFERER_NAME": bookings_common.get_offerer_name(individual_booking),
             "EVENT_DATE": formatted_event_beginning_date,
             "EVENT_HOUR": formatted_event_beginning_time,
             "OFFER_PRICE": stock_price,
             "OFFER_TAGS": ",".join([criterion.name for criterion in offer.criteria]),
-            "OFFER_TOKEN": booking_token,
+            "OFFER_TOKEN": bookings_common.get_booking_token(individual_booking),
             "OFFER_CATEGORY": offer.category.id,
             "OFFER_SUBCATEGORY": offer.subcategoryId,
             "IS_DIGITAL_BOOKING_WITH_ACTIVATION_CODE_AND_NO_EXPIRATION_DATE": bool(
@@ -103,7 +91,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
             ),
             "CODE_EXPIRATION_DATE": code_expiration_date,
             "VENUE_NAME": venue.publicName if venue.publicName else venue.name,
-            "VENUE_ADDRESS": venue.address,
+            "VENUE_ADDRESS": bookings_common.get_venue_address(individual_booking),
             "VENUE_POSTAL_CODE": venue.postalCode,
             "VENUE_CITY": venue.city,
             "ALL_BUT_NOT_VIRTUAL_THING": offer.isEvent or (not offer.isEvent and not offer.isDigital),
@@ -120,7 +108,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "DIGITAL_OFFER_URL": individual_booking.booking.completedUrl or None,
             "OFFER_WITHDRAWAL_DETAILS": offer.withdrawalDetails or None,
             "BOOKING_LINK": booking_app_link(individual_booking.booking),
-            "OFFER_WITHDRAWAL_DELAY": offer_withdrawal_delay_in_days,
-            "OFFER_WITHDRAWAL_TYPE": individual_booking.booking.stock.offer.withdrawalType,
+            "OFFER_WITHDRAWAL_DELAY": bookings_common.get_offer_withdrawal_delay(individual_booking),
+            "OFFER_WITHDRAWAL_TYPE": bookings_common.get_offer_withdrawal_type(individual_booking),
         },
     )

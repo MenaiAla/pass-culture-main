@@ -27,11 +27,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @freeze_time("2021-10-15 12:48:00")
-def sendinblue_send_email_test():
-    individual_booking = IndividualBookingFactory(
+def test_sendinblue_send_email():
+    booking = IndividualBookingFactory(
         stock=offers_factories.EventStockFactory(price=1.99), dateCreated=datetime.utcnow()
     )
-    send_individual_booking_confirmation_email_to_beneficiary(individual_booking)
+    send_individual_booking_confirmation_email_to_beneficiary(booking.individualBooking)
 
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
