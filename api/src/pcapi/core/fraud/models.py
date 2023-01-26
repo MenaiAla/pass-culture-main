@@ -436,7 +436,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         postgresql.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
         nullable=True,
     )
-    resultContent = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
+    resultContent: dict | None = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
     status = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
     thirdPartyId: str = sa.Column(sa.TEXT(), index=True, nullable=False)
     type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
@@ -444,7 +444,9 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
     )
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks", order_by=dateCreated)  # type: ignore [misc]
+    user: users_models.User = sa.orm.relationship(
+        "User", foreign_keys=[userId], backref="beneficiaryFraudChecks", order_by=dateCreated
+    )
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
@@ -467,7 +469,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         if self.resultContent is None:
             raise ValueError("No source data associated with this fraud check")
-        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)  # type: ignore [arg-type]
+        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)
 
     @property
     def applicable_eligibilities(self) -> list[users_models.EligibilityType]:
@@ -497,12 +499,14 @@ class OrphanDmsApplication(PcObject, Base, Model):
 class BeneficiaryFraudReview(PcObject, Base, Model):
     __tablename__ = "beneficiary_fraud_review"
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")  # type: ignore [misc]
+    author: users_models.User = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
     dateReviewed: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     reason = sa.Column(sa.Text)
     review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews"))  # type: ignore [misc]
+    user: users_models.User = sa.orm.relationship(
+        "User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews")
+    )
 
 
 @dataclasses.dataclass

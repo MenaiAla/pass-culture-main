@@ -2,6 +2,7 @@ from datetime import date
 from datetime import datetime
 import random
 import string
+import typing
 import uuid
 
 from dateutil.relativedelta import relativedelta
@@ -145,7 +146,12 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     eligibilityType = users_models.EligibilityType.AGE18
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.BeneficiaryFraudCheck],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.BeneficiaryFraudCheck:
         """Override the default ``_create`` with our custom call."""
         factory_class = FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.get(kwargs["type"])
         content = {}
