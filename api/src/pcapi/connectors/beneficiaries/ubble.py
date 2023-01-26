@@ -42,14 +42,15 @@ INCLUDED_MODELS = {
 
 def _get_included_attributes(
     response: ubble_fraud_models.UbbleIdentificationResponse, type_: str
-) -> ubble_fraud_models.UbbleIdentificationObject:
-    filtered = list(filter(lambda included: included["type"] == type_, response["included"]))  # type: ignore [arg-type, index]
-    attributes = INCLUDED_MODELS[type_](**filtered[0].get("attributes")) if filtered else None
-    return attributes
+) -> ubble_fraud_models.UbbleIdentificationObject | None:
+    filtered = list(filter(lambda included: included.type == type_, response.included))
+    if not filtered:
+        return None
+    return INCLUDED_MODELS[type_](**filtered[0].attributes.dict())
 
 
 def _get_data_attribute(response: ubble_fraud_models.UbbleIdentificationResponse, name: str) -> typing.Any:
-    return response["data"]["attributes"].get(name)  # type: ignore [index]
+    return getattr(response.data.attributes, name)
 
 
 def _parse_ubble_gender(ubble_gender: str | None) -> users_models.GenderEnum | None:
@@ -63,22 +64,25 @@ def _parse_ubble_gender(ubble_gender: str | None) -> users_models.GenderEnum | N
 def _extract_useful_content_from_response(
     response: ubble_fraud_models.UbbleIdentificationResponse,
 ) -> ubble_fraud_models.UbbleContent:
-    documents: ubble_fraud_models.UbbleIdentificationDocuments = _get_included_attributes(response, "documents")  # type: ignore [assignment]
-    document_checks: ubble_fraud_models.UbbleIdentificationDocumentChecks = _get_included_attributes(  # type: ignore [assignment]
-        response, "document-checks"
+    documents = typing.cast(
+        ubble_fraud_models.UbbleIdentificationDocuments, _get_included_attributes(response, "documents")
     )
-    reference_data_checks: ubble_fraud_models.UbbleIdentificationReferenceDataChecks = _get_included_attributes(  # type: ignore [assignment]
-        response, "reference-data-checks"
+    document_checks = typing.cast(
+        ubble_fraud_models.UbbleIdentificationDocumentChecks, _get_included_attributes(response, "document-checks")
+    )
+    reference_data_checks = typing.cast(
+        ubble_fraud_models.UbbleIdentificationReferenceDataChecks,
+        _get_included_attributes(response, "reference-data-checks"),
     )
 
     comment = _get_data_attribute(response, "comment")
-    identification_id = _get_data_attribute(response, "identification-id")
-    identification_url = _get_data_attribute(response, "identification-url")
-    registered_at = _get_data_attribute(response, "created-at")
-    processed_at = _get_data_attribute(response, "ended-at")
+    identification_id = _get_data_attribute(response, "identification_id")
+    identification_url = _get_data_attribute(response, "identification_url")
+    registered_at = _get_data_attribute(response, "created_at")
+    processed_at = _get_data_attribute(response, "ended_at")
     score = _get_data_attribute(response, "score")
     status = _get_data_attribute(response, "status")
-    status_updated_at = _get_data_attribute(response, "status-updated-at")
+    status_updated_at = _get_data_attribute(response, "status_updated_at")
 
     content = ubble_fraud_models.UbbleContent(
         birth_date=getattr(documents, "birth_date", None),
@@ -181,7 +185,7 @@ def start_identification(
 
         raise requests.ExternalAPIException(is_retryable=False)
 
-    content = _extract_useful_content_from_response(response.json())
+    content = _extract_useful_content_from_response(ubble_fraud_models.UbbleIdentificationResponse(**response.json()))
     core_logging.log_for_supervision(
         logger,
         logging.INFO,
@@ -237,7 +241,7 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
         )
         raise requests.ExternalAPIException(is_retryable=False)
 
-    content = _extract_useful_content_from_response(response.json())
+    content = _extract_useful_content_from_response(ubble_fraud_models.UbbleIdentificationResponse(**response.json()))
     core_logging.log_for_supervision(
         logger,
         logging.INFO,
