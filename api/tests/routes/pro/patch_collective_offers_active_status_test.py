@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 
 from pcapi.core import testing
@@ -17,11 +19,15 @@ class Returns204Test:
         offer2 = CollectiveOfferFactory(venue=venue, isActive=False)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        client = client.with_session_auth("pro@example.com")
 
         # When
-        client = client.with_session_auth("pro@example.com")
         data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": True}
-        response = client.patch("/collective/offers/active-status", json=data)
+
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.with_session_auth("pro@example.com").patch("/collective/offers/active-status", json=data)
 
         # Then
         assert response.status_code == 204
@@ -55,12 +61,16 @@ class Returns204Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        client = client.with_session_auth("pro@example.com")
         data = {
             "ids": [humanize(approved_offer.id), humanize(pending_offer.id), humanize(rejected_offer.id)],
             "isActive": True,
         }
-        response = client.patch("/collective/offers/active-status", json=data)
+
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            client = client.with_session_auth("pro@example.com")
+            response = client.patch("/collective/offers/active-status", json=data)
 
         assert response.status_code == 204
         assert approved_offer.isActive
