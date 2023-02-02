@@ -10,7 +10,11 @@ import { serializePatchOffer } from './serializers'
 type TSuccessPayload = { id: string }
 type TFailurePayload = { errors: Record<string, string> }
 export type TUpdateIndividualOffer = Adapter<
-  { offer: IOfferIndividual; formValues: IOfferIndividualFormValues },
+  {
+    offer: IOfferIndividual
+    formValues: IOfferIndividualFormValues
+    shouldSendMail?: boolean
+  },
   TSuccessPayload,
   TFailurePayload
 >
@@ -18,10 +22,12 @@ export type TUpdateIndividualOffer = Adapter<
 const updateIndividualOffer: TUpdateIndividualOffer = async ({
   offer,
   formValues,
+  shouldSendMail = false,
 }) => {
   /* istanbul ignore next: DEBT, TO FIX */
   try {
     let sentValues: Partial<IOfferIndividualFormValues> = formValues
+
     if (offer?.lastProvider) {
       const {
         ALLOCINE: allocineEditableFields,
@@ -43,7 +49,7 @@ const updateIndividualOffer: TUpdateIndividualOffer = async ({
 
     const response = await api.patchOffer(
       offer.id,
-      serializePatchOffer(sentValues)
+      serializePatchOffer(sentValues, shouldSendMail)
     )
     return {
       isOk: true,

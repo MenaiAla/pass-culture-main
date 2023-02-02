@@ -41,7 +41,8 @@ export const serializeDurationMinutes = (
 }
 
 export const serializePatchOffer = (
-  formValues: Partial<IOfferIndividualFormValues>
+  formValues: Partial<IOfferIndividualFormValues>,
+  shouldSendMail?: boolean
 ): PatchOfferBodyModel => ({
   audioDisabilityCompliant:
     formValues.accessibility &&
@@ -72,4 +73,5 @@ export const serializePatchOffer = (
     : null,
   externalTicketOfficeUrl: formValues.externalTicketOfficeUrl || undefined,
   url: formValues.url || undefined,
+  shouldSendMail: shouldSendMail,
 })

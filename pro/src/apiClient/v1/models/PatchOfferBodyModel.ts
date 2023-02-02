@@ -26,5 +26,6 @@ export type PatchOfferBodyModel = {
   withdrawalDelay?: number | null;
   withdrawalDetails?: string | null;
   withdrawalType?: WithdrawalTypeEnum | null;
+  shouldSendMail?: boolean | null;
 };
 
