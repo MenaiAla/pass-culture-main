@@ -160,3 +160,12 @@ def date_to_localized_datetime(date_: date | None, time_: time) -> datetime | No
         return None
     naive_utc_datetime = datetime.combine(date_, time_)
     return pytz.timezone(METROPOLE_TIMEZONE).localize(naive_utc_datetime).astimezone(pytz.utc)
+
+
+def datetime_to_timezone_naive_datetime(dt: datetime) -> datetime:
+    if not dt.tzinfo:
+        return dt
+
+    tz_naive_dt = dt.astimezone(pytz.utc)
+    tz_naive_dt = tz_naive_dt.replace(tzinfo=None)
+    return tz_naive_dt

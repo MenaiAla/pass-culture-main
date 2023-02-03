@@ -28,7 +28,7 @@ class BookingFactory(BaseFactory):
         if extracted:
             self.cancellationLimitDate = extracted
         else:
-            self.cancellationLimitDate = api.compute_cancellation_limit_date(
+            self.cancellationLimitDate = api.compute_booking_cancellation_limit_date(
                 self.stock.beginningDatetime, self.dateCreated
             )
         db.session.add(self)

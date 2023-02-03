@@ -858,27 +858,27 @@ class ComputeCancellationDateTest:
     def test_returns_none_if_no_event_beginning(self, booking_date):
         event_beginning = None
         booking_creation = booking_date
-        assert api.compute_cancellation_limit_date(event_beginning, booking_creation) is None
+        assert api.compute_booking_cancellation_limit_date(event_beginning, booking_creation) is None
 
     def test_returns_creation_date_if_event_begins_too_soon(self, booking_date):
         event_date_too_close_to_cancel_booking = booking_date + timedelta(days=1)
         booking_creation = booking_date
         assert (
-            api.compute_cancellation_limit_date(event_date_too_close_to_cancel_booking, booking_creation)
+            api.compute_booking_cancellation_limit_date(event_date_too_close_to_cancel_booking, booking_creation)
             == booking_creation
         )
 
     def test_returns_two_days_after_booking_creation_if_event_begins_in_more_than_four_days(self, booking_date):
         event_date_more_ten_days_from_now = booking_date + timedelta(days=6)
         booking_creation = booking_date
-        assert api.compute_cancellation_limit_date(
+        assert api.compute_booking_cancellation_limit_date(
             event_date_more_ten_days_from_now, booking_creation
         ) == booking_creation + timedelta(days=2)
 
     def test_returns_two_days_before_event_if_event_begins_between_two_and_four_days_from_now(self, booking_date):
         event_date_four_days_from_now = booking_date + timedelta(days=4)
         booking_creation = booking_date
-        assert api.compute_cancellation_limit_date(
+        assert api.compute_booking_cancellation_limit_date(
             event_date_four_days_from_now, booking_creation
         ) == event_date_four_days_from_now - timedelta(days=2)
 
@@ -895,13 +895,14 @@ class UpdateCancellationLimitDatesTest:
             stock=recent_booking.stock, dateCreated=(datetime.utcnow() - timedelta(days=7))
         )
         # When
+        tomorrow = datetime.utcnow() + timedelta(days=1)
         updated_bookings = api.update_cancellation_limit_dates(
             bookings_to_update=[recent_booking, old_booking],
-            new_beginning_datetime=datetime.utcnow() + timedelta(days=1),
+            new_beginning_datetime=tomorrow,
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2032, 11, 17, 15)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == tomorrow
 
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_three_days(self):
         #  Given
@@ -918,7 +919,8 @@ class UpdateCancellationLimitDatesTest:
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2032, 11, 18, 15)
+        two_days_past_today = datetime.utcnow() + timedelta(days=2)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == two_days_past_today
 
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_a_week(self):
         #  Given
@@ -935,7 +937,8 @@ class UpdateCancellationLimitDatesTest:
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2032, 11, 19, 15)
+        two_days_past_today = datetime.utcnow() + timedelta(days=2)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == two_days_past_today
 
 
 @pytest.mark.usefixtures("db_session")
