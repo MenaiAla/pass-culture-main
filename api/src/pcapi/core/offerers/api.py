@@ -97,6 +97,11 @@ def update_venue(
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
 
     if contact_data:
+        # ensure that venue.contact exists before calling trace_update
+        # with it. Otherwise, trace_update would use the default target
+        # which is the venue and it will raise an exception.
+        if not venue.contact:
+            venue.contact = models.VenueContact(venue=venue)
         venue_snapshot.trace_update(contact_data.dict(), target=venue.contact, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
 
@@ -178,7 +183,11 @@ def upsert_venue_contact(venue: models.Venue, contact_data: serialize_base.Venue
         for field, value in contact_data.dict().items()
         if venue_contact.field_exists_and_has_changed(field, value)
     }
+
     if not modifications:
+        # if the venue's contact has been created, ensure it won't be
+        # saved since there are no modifications.
+        db.session.expunge(venue_contact)
         return venue
 
     venue_contact.email = contact_data.email
