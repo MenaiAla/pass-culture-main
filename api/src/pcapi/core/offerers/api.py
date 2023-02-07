@@ -25,7 +25,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
@@ -48,6 +47,7 @@ import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
 from pcapi.utils.regions import get_department_codes_for_region
 
+from . import exceptions
 from . import models
 from . import repository as offerers_repository
 from . import validation

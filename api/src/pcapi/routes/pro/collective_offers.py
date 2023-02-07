@@ -343,7 +343,7 @@ def patch_collective_offers_active_status(
     if body.is_active == True:
         offerer_ids = set()
         for offer_id in body.ids:
-            offer = educational_repository.get_collective_offer_by_id(offer_id)
+            offer = educational_repository.get_offerer_ids_from_collective_offers_ids(offer_id)
             offerer_id = offer.venue.managingOffererId
             offerer_ids.add(offerer_id)
         for offerer_id in offerer_ids:

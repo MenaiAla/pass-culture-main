@@ -730,6 +730,13 @@ def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOf
         raise educational_exceptions.CollectiveOfferNotFound()
 
 
+def get_offerer_ids_from_collective_offers_ids(offers_ids) -> set[int]:
+    query = educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offers_ids)
+    query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+    query = query.join(educational_models.CollectiveOffer, offerers_models.Venue.collectiveOffers)
+    return set(query.all())
+
+
 def get_collective_offer_template_by_id(offer_id: int) -> educational_models.CollectiveOfferTemplate:
     try:
         query = educational_models.CollectiveOfferTemplate.query
