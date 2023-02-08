@@ -666,7 +666,7 @@ def create_mediation(
         image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
     )
 
-    mediation = models.Mediation(author=user, offer=offer, credit=credit)
+    mediation = models.Mediation(author=user, offer=offer, credit=credit)  # type: ignore [arg-type]
 
     repository.add_to_session(mediation)
     db.session.flush()  # `create_thumb()` requires the object to have an id, so we must flush now.
@@ -1024,7 +1024,7 @@ def report_offer(user: User, offer: models.Offer, reason: str, custom_reason: st
         logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
 
 
-def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
+def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(
     offer: models.Offer, venue_provider: providers_models.VenueProvider
 ) -> None:
     sentry_sdk.set_tag("cinema-venue-provider", venue_provider.provider.localClass)
@@ -1032,7 +1032,8 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
         "Getting up-to-date show stock from booking provider on offer view",
         extra={"offer": offer.id, "venue_provider": venue_provider.id},
     )
-    shows_remaining_places = {}
+    offer_current_stocks = offer.activeStocks
+
     match venue_provider.provider.localClass:
         case "CDSStocks":
             if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
@@ -1056,17 +1057,13 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
         case _:
             raise ValueError(f"Unknown Provider: {venue_provider.provider.localClass}")
 
-    for show_id, remaining_places in shows_remaining_places.items():
-        stock = next(
-            (
-                s
-                for s in offer.activeStocks
-                if cinema_providers_utils.get_showtime_id_from_uuid(s.idAtProviders, venue_provider.provider.localClass)
-                == show_id
-            ),
-            None,
+    for stock in offer_current_stocks:
+        showtime_id = cinema_providers_utils.get_showtime_id_from_uuid(
+            stock.idAtProviders, venue_provider.provider.localClass
         )
-        if stock and remaining_places <= 0:
+        assert showtime_id
+        remaining_places = shows_remaining_places.pop(showtime_id, None)
+        if remaining_places is None or remaining_places <= 0:
             offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
 
 

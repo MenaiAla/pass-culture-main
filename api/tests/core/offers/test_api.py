@@ -5,6 +5,7 @@ import logging
 import os
 import pathlib
 from unittest import mock
+from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
@@ -24,6 +25,7 @@ from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import offer_validation
 import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -1857,3 +1859,68 @@ class FormatExtraDataTest:
             "musicType": "1",
             "musicSubType": "100",
         }
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
+    def test_available_places(self, mocked_get_shows_stock):
+        cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        offer_id_at_provider = f"1234%{venue_provider.venue.siret}"
+        offer = factories.EventOfferFactory()
+        show_id = 888
+
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}/2023-02-08",
+        )
+
+        mocked_get_shows_stock.return_value = {show_id: 2}
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+
+        assert stock.remainingQuantity == 10  # do not update if > 0
+
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
+    def test_no_more_available_places(self, mocked_get_shows_stock):
+        cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        offer_id_at_provider = f"1234%{venue_provider.venue.siret}"
+        offer = factories.EventOfferFactory()
+        show_id = 123
+
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}/2023-02-08",
+        )
+
+        mocked_get_shows_stock.return_value = {show_id: 0}
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+
+        assert stock.remainingQuantity == 0
+
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
+    def test_unknown_showtime(self, mocked_get_shows_stock):
+        cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        offer_id_at_provider = f"1234%{venue_provider.venue.siret}"
+        offer = factories.EventOfferFactory()
+        show_id = 456
+
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}/2023-02-08",
+        )
+
+        mocked_get_shows_stock.return_value = {111: 2}
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+
+        assert stock.remainingQuantity == 0
+
+# FIXME: add boost tests
