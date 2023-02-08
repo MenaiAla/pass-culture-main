@@ -8,6 +8,8 @@ import sqlalchemy as sa
 
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import models as finance_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.utils import date as date_utils
 from pcapi.utils.clean_accents import clean_accents
@@ -44,6 +46,14 @@ def _get_collective_bookings(form: collective_booking_forms.GetCollectiveBooking
             sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                 educational_models.EducationalInstitution.id, educational_models.EducationalInstitution.name
             ),
+            sa.orm.joinedload(educational_models.CollectiveBooking.offerer).load_only(offerers_models.Offerer.name),
+            sa.orm.joinedload(educational_models.CollectiveBooking.venue).load_only(offerers_models.Venue.name),
+            sa.orm.joinedload(educational_models.CollectiveBooking.pricings)
+            .load_only(finance_models.Pricing.amount)
+            .joinedload(finance_models.Pricing.cashflows)
+            .load_only(finance_models.Cashflow.batchId)
+            .joinedload(finance_models.Cashflow.batch)
+            .load_only(finance_models.CashflowBatch.label),
         )
     )
 
