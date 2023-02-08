@@ -731,9 +731,10 @@ def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOf
 
 
 def get_offerer_ids_from_collective_offers_ids(offers_ids) -> set[int]:
-    query = educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offers_ids)
+    query = db.session.query(offerers_models.Offerer)
     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
     query = query.join(educational_models.CollectiveOffer, offerers_models.Venue.collectiveOffers)
+    query = query.filter(educational_models.CollectiveOffer.id.in_(offers_ids))
     return set(query.all())
 
 
