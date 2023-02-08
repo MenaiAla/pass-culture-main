@@ -763,6 +763,7 @@ def can_offerer_create_educational_offer(offerer_id: int | None) -> None:
         return
 
     siren = offerers_repository.find_siren_by_offerer_id(offerer_id)
+
     try:
         response = adage_client.get_adage_offerer(siren)
         if len(response) == 0:

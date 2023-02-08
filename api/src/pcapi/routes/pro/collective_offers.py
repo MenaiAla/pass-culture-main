@@ -277,11 +277,6 @@ def create_collective_offer_template_from_collective_offer(
 def edit_collective_offer_template(
     offer_id: str, body: collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
-    if body.is_active == True:
-        try:
-            offerers_api.can_offerer_create_educational_offer(body.offerer_id)
-        except educational_exceptions.CulturalPartnerNotFoundException:
-            raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_template_id(dehumanized_id)
@@ -367,10 +362,13 @@ def patch_collective_offers_template_active_status(
     body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
 ) -> None:
     if body.is_active == True:
-        try:
-            offerers_api.can_offerer_create_educational_offer(body.offerer_id)
-        except educational_exceptions.CulturalPartnerNotFoundException:
-            raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
+        offers = educational_repository.get_offerer_ids_from_collective_offers_ids(body.ids)
+        for offer in offers:
+            try:
+                offerers_api.can_offerer_create_educational_offer(offer)
+            except educational_exceptions.CulturalPartnerNotFoundException:
+                raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
+
     collective_template_query = educational_api_offer.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     )
@@ -452,7 +450,6 @@ def patch_collective_offer_template_publication(
     offer_id: str,
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     dehumanized_id = dehumanize_or_raise(offer_id)
-
     try:
         offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
     except educational_exceptions.CollectiveOfferNotFound:
