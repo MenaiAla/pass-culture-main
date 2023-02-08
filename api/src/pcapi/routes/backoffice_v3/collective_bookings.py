@@ -73,6 +73,12 @@ def _get_collective_bookings(form: collective_booking_forms.GetCollectiveBooking
         to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
         query = query.filter(educational_models.CollectiveBooking.dateCreated <= to_datetime)
 
+    if form.offerer.data:
+        query = query.filter(educational_models.CollectiveBooking.offererId.in_(form.offerer.data))
+
+    if form.venue.data:
+        query = query.filter(educational_models.CollectiveBooking.venueId.in_(form.venue.data))
+
     if form.category.data:
         query = query.filter(
             educational_models.CollectiveOffer.subcategoryId.in_(
@@ -94,13 +100,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
     if not form.validate():
         return render_template("collective_bookings/list.html", isEAC=True, rows=[], form=form), 400
 
-    if (
-        not form.q.data
-        and not form.category.data
-        and not form.status.data
-        and not form.from_date.data
-        and not form.to_date.data
-    ):
+    if form.is_empty():
         # Empty results when no filter is set
         return render_template("collective_bookings/list.html", rows=[], form=form)
 
